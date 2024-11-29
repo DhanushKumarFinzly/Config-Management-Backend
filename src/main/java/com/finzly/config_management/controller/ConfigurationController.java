@@ -1,9 +1,13 @@
 package com.finzly.config_management.controller;
 
 import com.finzly.config_management.DTO.PropertyDTO;
+import com.finzly.config_management.DTO.TenantEnvPropertiesDTO;
+import com.finzly.config_management.Exception.ConfigurationSaveException;
+import com.finzly.config_management.Exception.UpdateFailedException;
 import com.finzly.config_management.Repository.ConfigurationRepo;
 import com.finzly.config_management.service.ConfigurationService;
 import com.finzly.config_management.Exception.DataNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +36,52 @@ public class ConfigurationController {
           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
        }
 
+    }
+
+    @PostMapping("/tenant-env-configuration")
+    public ResponseEntity<ApiResponse<String>> saveTenantEnvProperties(@RequestBody TenantEnvPropertiesDTO tenantEnvPropertiesDTO) throws ConfigurationSaveException {
+       try{
+           configurationService.saveTenantEnvProperties(tenantEnvPropertiesDTO);
+           return ResponseEntity.ok(new ApiResponse<>("Configurations Saved successfully!", HttpStatus.OK.value()));
+
+       } catch (Exception e) {
+           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+
+       }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteProperties(@PathVariable String id){
+        try {
+            configurationService.deleteProperties(id);
+            return ResponseEntity.ok(new ApiResponse<>("Property Deleted SuccessFully...!", HttpStatus.OK.value()));
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            HttpStatus status;
+            if (message.contains("Invalid UUID format")) {
+                status = HttpStatus.BAD_REQUEST;
+            } else{
+                status = HttpStatus.NOT_FOUND;
+            }
+            return ResponseEntity.status(status).body(new ApiResponse<>(message, status.value()));
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<String>> updateProperties(@RequestBody PropertyDTO propertyDTO) throws UpdateFailedException {
+       try {
+           configurationService.updateProperties(propertyDTO);
+           return ResponseEntity.ok(new ApiResponse<>("Property Updated SuccessFully...!", HttpStatus.CREATED.value()));
+       } catch (IllegalArgumentException e) {
+           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+       }
+       catch (EntityNotFoundException e){
+           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+       } catch (Exception e) {
+           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+
+       }
     }
 
 

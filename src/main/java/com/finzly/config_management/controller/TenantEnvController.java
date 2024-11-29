@@ -1,11 +1,13 @@
 package com.finzly.config_management.controller;
 
+import com.finzly.config_management.DTO.EnvironmentsDTO;
 import com.finzly.config_management.DTO.TenantDto;
 import com.finzly.config_management.DTO.TenantEnvDto;
 import com.finzly.config_management.Exception.TenantEnvCreationException;
 import com.finzly.config_management.Repository.TenantEnvRepo;
 import com.finzly.config_management.model.TenantEnv;
 import com.finzly.config_management.service.TenantEnvService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public class TenantEnvController {
     }
 
     @GetMapping("/environments")
-    public ResponseEntity<ApiResponse<List<String>>> getEnvironments() {
+    public ResponseEntity<ApiResponse<List<String>>> getEnvironments(){
         List<String> Environments = tenantEnvService.getEnvironments();
         if (Environments.isEmpty()) {
             return ResponseEntity.ok(new ApiResponse<>("No Environments Found", HttpStatus.OK.value(), new ArrayList<>()));
@@ -49,12 +51,16 @@ public class TenantEnvController {
     }
 
     @GetMapping("/{tenant}")
-    public ResponseEntity<ApiResponse<List<String>>> getEnvironmentsByTenant(@PathVariable String tenant) {
-        List<String> Environments = tenantEnvService.getEnvironmentsForTenant(tenant);
-        if (Environments.isEmpty()) {
-            return ResponseEntity.ok(new ApiResponse<>("No Environments Found For This Tenant", HttpStatus.OK.value(), new ArrayList<>()));
-        } else {
-            return ResponseEntity.ok(new ApiResponse<>("Environments Fetched Successfully", HttpStatus.OK.value(), Environments));
+    public ResponseEntity<ApiResponse<EnvironmentsDTO>> getEnvironmentsByTenant(@PathVariable String tenant) {
+        try {
+            EnvironmentsDTO environments=tenantEnvService.getEnvironmentsForTenant(tenant);
+            return ResponseEntity.ok(new ApiResponse<>("Environemnts Fetched successfully for given tenant", HttpStatus.OK.value(),environments));
+        }
+        catch (EntityNotFoundException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+
         }
     }
 

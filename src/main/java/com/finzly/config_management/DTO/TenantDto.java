@@ -3,7 +3,8 @@ package com.finzly.config_management.DTO;
 public class TenantDto {
 
     private String tenant;
-
+    private String tenantName;
+    private String status;
     public String getStatus() {
         return status;
     }
@@ -12,8 +13,7 @@ public class TenantDto {
         this.status = status;
     }
 
-    private String tenantName;
-    private String status;
+
 
     public TenantDto(String tenant, String tenantName,String status) {
         this.tenant = tenant;

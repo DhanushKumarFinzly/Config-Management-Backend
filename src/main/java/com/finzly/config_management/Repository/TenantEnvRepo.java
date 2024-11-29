@@ -2,6 +2,7 @@ package com.finzly.config_management.Repository;
 
 import com.finzly.config_management.DTO.TenantDto;
 import com.finzly.config_management.model.TenantEnv;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,9 @@ public interface TenantEnvRepo extends JpaRepository<TenantEnv, UUID> {
 
     @Query("SELECT environment FROM TenantEnv WHERE tenant = :tenant")
     List<String> findEnvironmentsByTenant(String tenant);
+
+    @Query("SELECT  tenantName FROM TenantEnv WHERE tenant = :tenant")
+    List<String>  findTenantNameByTenant(String tenant);
 
     @Query("SELECT id FROM TenantEnv  WHERE tenant = :tenant AND environment = :environment")
     String findIdByTenantAndEnvironment(String tenant,String environment);

@@ -34,10 +34,10 @@ public class Configuration {
     private String type;
 
     @Column(name = "created_on")
-    private LocalDateTime createdOn;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_on")
-    private LocalDateTime updatedOn;
+    private LocalDateTime updatedAt;
 
     @Column(name = "status")
     private String status;
@@ -60,15 +60,15 @@ public class Configuration {
     public Configuration() {
     }
 
-    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdOn, LocalDateTime updatedOn, String status, String product, String appId, int isSecureString, TenantEnv tenantEnv) {
+    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdAt, LocalDateTime updatedAt, String status, String product, String appId, int isSecureString, TenantEnv tenantEnv) {
         this.propertyKey = propertyKey;
         this.fieldGroup = fieldGroup;
         this.application = application;
         this.propertyValue = propertyValue;
         this.target = target;
         this.type = type;
-        this.createdOn = createdOn;
-        this.updatedOn = updatedOn;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.status = status;
         this.product = product;
         this.appId = appId;
@@ -133,19 +133,19 @@ public class Configuration {
     }
 
     public LocalDateTime getCreatedOn() {
-        return createdOn;
+        return createdAt;
     }
 
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedOn() {
-        return updatedOn;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatedOn(LocalDateTime updatedOn) {
-        this.updatedOn = updatedOn;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt= updatedAt;
     }
 
     public String getStatus() {
