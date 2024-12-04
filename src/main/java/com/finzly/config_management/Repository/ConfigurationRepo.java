@@ -15,6 +15,9 @@ import java.util.UUID;
 public interface ConfigurationRepo extends JpaRepository<Configuration, UUID> {
 
 
-    @Query("SELECT c FROM Configuration c WHERE c.tenantEnv.id = :uuid")
+    @Query("SELECT c FROM Configuration c WHERE c.tenantEnv = :uuid")
     List<Configuration> findByTenantEnvId(UUID uuid);
+
+    boolean existsByPropertyKeyAndTenantEnv(String propertyKey, UUID tenantEnv);
+
 }

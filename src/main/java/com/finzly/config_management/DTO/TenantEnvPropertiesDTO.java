@@ -2,14 +2,12 @@ package com.finzly.config_management.DTO;
 
 public class TenantEnvPropertiesDTO {
     private String tenant;
-    private String tenantName;
     private String environment;
     private String propertyKey;
     private String propertyValue;
 
-    public TenantEnvPropertiesDTO(String tenant, String tenantName, String environment, String propertyKey, String propertyValue) {
+    public TenantEnvPropertiesDTO(String tenant, String environment, String propertyKey, String propertyValue) {
         this.tenant = tenant;
-        this.tenantName = tenantName;
         this.environment = environment;
         this.propertyKey = propertyKey;
         this.propertyValue = propertyValue;
@@ -25,13 +23,6 @@ public class TenantEnvPropertiesDTO {
         this.tenant = tenant;
     }
 
-    public String getTenantName() {
-        return tenantName;
-    }
-
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
-    }
 
     public String getEnvironment() {
         return environment;

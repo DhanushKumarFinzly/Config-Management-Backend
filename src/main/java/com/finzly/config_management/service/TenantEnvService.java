@@ -53,18 +53,18 @@ public class TenantEnvService {
 
 
     public void saveTenantEnv(TenantEnvDto tenantEnvDto) throws TenantEnvCreationException {
-       try {
-           TenantEnv tenantEnv = new TenantEnv();
-           tenantEnv.setTenant(tenantEnvDto.getTenant());
-           tenantEnv.setTenantName(tenantEnvDto.getTenantName());
-           tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
-           tenantEnv.setStatus("Active");
-           tenantEnv.setCreatedAt(LocalDateTime.now());
-           tenantEnv.setUpdatedAt(LocalDateTime.now());
-           tenantEnvRepo.save(tenantEnv);
-       } catch (Exception e) {
-           throw new TenantEnvCreationException("Error while adding tenant environment data: ");
-       }
+        try {
+            TenantEnv tenantEnv = new TenantEnv();
+            tenantEnv.setTenant(tenantEnvDto.getTenant());
+            tenantEnv.setTenantName(tenantEnvDto.getTenantName());
+            tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
+            tenantEnv.setStatus("Active");
+            tenantEnv.setCreatedAt(LocalDateTime.now());
+            tenantEnv.setUpdatedAt(LocalDateTime.now());
+            tenantEnvRepo.save(tenantEnv);
+        } catch (Exception e) {
+            throw new TenantEnvCreationException("Error while adding tenant environment data: ");
+        }
 
     }
 

@@ -52,15 +52,15 @@ public class Configuration {
     @Column(name = "is_secure_string")
     private int isSecureString;
 
-    @ManyToOne
-    @JoinColumn(name = "tenant_env_id", referencedColumnName = "id", nullable = false) // Foreign key column
-    private TenantEnv tenantEnv;
+    @Column(name = "tenant_env_id")
+    @JdbcTypeCode(java.sql.Types.VARCHAR)
+    private UUID tenantEnv;
 
 
     public Configuration() {
     }
 
-    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdAt, LocalDateTime updatedAt, String status, String product, String appId, int isSecureString, TenantEnv tenantEnv) {
+    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdAt, LocalDateTime updatedAt, String status, String product, String appId, int isSecureString, UUID tenantEnv) {
         this.propertyKey = propertyKey;
         this.fieldGroup = fieldGroup;
         this.application = application;
@@ -180,11 +180,11 @@ public class Configuration {
         this.isSecureString = isSecureString;
     }
 
-    public TenantEnv getTenantEnv() {
+    public UUID getTenantEnv() {
         return tenantEnv;
     }
 
-    public void setTenantEnv(TenantEnv tenantEnv) {
+    public void setTenantEnv(UUID tenantEnv) {
         this.tenantEnv = tenantEnv;
     }
 

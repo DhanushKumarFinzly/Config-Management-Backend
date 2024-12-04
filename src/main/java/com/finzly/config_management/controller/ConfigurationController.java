@@ -13,41 +13,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/api")
 public class ConfigurationController {
-
-
     @Autowired
     ConfigurationService configurationService;
-
-    @Autowired
-    ConfigurationRepo configurationRepo;
-
     @GetMapping("/{tenant}/{environment}")
     public ResponseEntity<ApiResponse<List<PropertyDTO>>> getProperty(@PathVariable String tenant, @PathVariable String environment) throws DataNotFoundException {
-       try {
-           List<PropertyDTO> properties=configurationService.getProperty(tenant, environment);
-           return ResponseEntity.ok(new ApiResponse<>("Property found successfully!", HttpStatus.OK.value(),properties));
-       } catch (Exception e) {
-          return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
-       }
-
+        try {
+            List<PropertyDTO> properties=configurationService.getProperty(tenant, environment);
+            return ResponseEntity.ok(new ApiResponse<>("Property found successfully!", HttpStatus.OK.value(),properties));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value(), Collections.emptyList()));
+        }
     }
-
     @PostMapping("/tenant-env-configuration")
     public ResponseEntity<ApiResponse<String>> saveTenantEnvProperties(@RequestBody TenantEnvPropertiesDTO tenantEnvPropertiesDTO) throws ConfigurationSaveException {
-       try{
-           configurationService.saveTenantEnvProperties(tenantEnvPropertiesDTO);
-           return ResponseEntity.ok(new ApiResponse<>("Configurations Saved successfully!", HttpStatus.OK.value()));
-
-       } catch (Exception e) {
-           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
-
-       }
+        try{
+            configurationService.saveTenantEnvProperties(tenantEnvPropertiesDTO);
+            return ResponseEntity.ok(new ApiResponse<>("Configurations Saved successfully!", HttpStatus.OK.value()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -70,20 +63,64 @@ public class ConfigurationController {
 
     @PutMapping
     public ResponseEntity<ApiResponse<String>> updateProperties(@RequestBody PropertyDTO propertyDTO) throws UpdateFailedException {
-       try {
-           configurationService.updateProperties(propertyDTO);
-           return ResponseEntity.ok(new ApiResponse<>("Property Updated SuccessFully...!", HttpStatus.CREATED.value()));
-       } catch (IllegalArgumentException e) {
-           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
-       }
-       catch (EntityNotFoundException e){
-           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
-       } catch (Exception e) {
-           return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
-
-       }
+        try {
+            configurationService.updateProperties(propertyDTO);
+            return ResponseEntity.ok(new ApiResponse<>("Property Updated SuccessFully...!", HttpStatus.CREATED.value()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+        catch (EntityNotFoundException e){
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
     }
 
+    @GetMapping("{tenant1}/{environment1}/{tenant2}/{environment2}")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> tenantEnvComparison(
+            @PathVariable String tenant1,
+            @PathVariable String environment1,
+            @PathVariable String tenant2,
+            @PathVariable String environment2
+    ) {
+        try {
+            List<Map<String, Object>> result = configurationService.tenantEnvComparison(
+                    tenant1, environment1, tenant2, environment2
+            );
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            "Property Fetched Successfully!",
+                            HttpStatus.OK.value(),
+                            result
+                    )
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            e.getMessage(),
+                            HttpStatus.BAD_REQUEST.value()
+                    )
+            );
+        }
+    }
+
+
+    @PutMapping("{tenant}/{environment}/{propertyKey}/{newValue}")
+    public ResponseEntity<ApiResponse<String>> changeProperty(
+            @PathVariable String tenant,
+            @PathVariable String environment,
+            @PathVariable String propertyKey,
+            @PathVariable String newValue) {
+        try {
+            configurationService.changeProperty(tenant, environment, propertyKey, newValue);
+            return ResponseEntity.ok(
+                    new ApiResponse<>("Property Updated Successfully!", HttpStatus.OK.value()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+    }
 
 
 }

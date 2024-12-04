@@ -1,7 +1,7 @@
 package com.finzly.config_management.DTO;
 
 public class TenantEnvDto {
-    
+
     private String tenant;
     private String tenantName;
     private String environment;
