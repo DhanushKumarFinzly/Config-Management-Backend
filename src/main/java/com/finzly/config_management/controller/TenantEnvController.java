@@ -37,7 +37,6 @@ public class TenantEnvController {
         } else {
             return ResponseEntity.ok(new ApiResponse<>("Tenants Fetched Successfully", HttpStatus.OK.value(), tenants));
         }
-
     }
 
     @GetMapping("/environments")
@@ -69,16 +68,9 @@ public class TenantEnvController {
         try{
             tenantEnvService.saveTenantEnv(tenantEnv);
             return ResponseEntity.ok(new ApiResponse<>("TenantEnv Added Successfully..!",HttpStatus.CREATED.value()));
-
         }
         catch (TenantEnvCreationException e) {
             return ResponseEntity.ok(new ApiResponse<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()));
-
         }
-
     }
-
-
-
-
 }

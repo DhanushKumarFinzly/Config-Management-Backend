@@ -13,7 +13,6 @@ import java.util.UUID;
 )
 public class TenantEnv {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcTypeCode(java.sql.Types.VARCHAR)
@@ -27,8 +26,6 @@ public class TenantEnv {
 
     @Column(name = "tenant_name")
     private String tenantName;
-
-
 
     @Column(name = "status")
     private String status;
@@ -71,8 +68,6 @@ public class TenantEnv {
         this.tenantName = tenantName;
     }
 
-
-
     public String getStatus() {
         return status;
     }
@@ -100,7 +95,6 @@ public class TenantEnv {
 
     // Default constructor
     public TenantEnv() {}
-
     public TenantEnv(UUID id, String tenant, String environment, String tenantName, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.tenant = tenant;
@@ -110,16 +104,12 @@ public class TenantEnv {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
     public TenantEnv(String tenant, String environment, String tenantName, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.tenant = tenant;
         this.environment = environment;
         this.tenantName = tenantName;
-
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
-
 }
