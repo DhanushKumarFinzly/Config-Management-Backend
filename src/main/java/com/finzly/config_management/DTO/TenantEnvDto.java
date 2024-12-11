@@ -5,6 +5,25 @@ public class TenantEnvDto {
     private String tenant;
     private String tenantName;
     private String environment;
+    private String application;
+    private String fieldGroup;
+
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public String getFieldGroup() {
+        return fieldGroup;
+    }
+
+    public void setFieldGroup(String fieldGroup) {
+        this.fieldGroup = fieldGroup;
+    }
 
     public String getTenant() {
         return tenant;
@@ -35,4 +54,12 @@ public class TenantEnvDto {
         this.tenantName = tenantName;
         this.environment = environment;
     }
+    public TenantEnvDto(String tenant, String tenantName, String environment, String application, String fieldGroup) {
+        this.tenant = tenant;
+        this.tenantName = tenantName;
+        this.environment = environment;
+        this.application = application;
+        this.fieldGroup = fieldGroup;
+    }
+
 }

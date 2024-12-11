@@ -74,13 +74,13 @@ public class TenantEnvService {
             tenantEnv.setCreatedAt(LocalDateTime.now());
             tenantEnv.setUpdatedAt(LocalDateTime.now());
             tenantEnvRepo.save(tenantEnv);
-            addPropertiesForNewTenant(tenantEnvDto.getTenant(), tenantEnvDto.getEnvironment());
+            addPropertiesForNewTenant(tenantEnvDto.getTenant(), tenantEnvDto.getEnvironment(),tenantEnvDto.getApplication(),tenantEnvDto.getFieldGroup());
         } catch (Exception e) {
             throw new TenantEnvCreationException("Error while adding tenant environment data: ");
         }
     }
 
-    public void addPropertiesForNewTenant(String newTenant, String newEnv) throws UpdateFailedException {
+    public void addPropertiesForNewTenant(String newTenant, String newEnv,String application,String fieldGroup) throws UpdateFailedException {
         try {
             List<MasterConfiguration> masterConfigurations = masterConfigurationRepo.findAll();
             String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(newTenant, newEnv);
@@ -114,8 +114,8 @@ public class TenantEnvService {
                 }
                 Configuration configuration = new Configuration(
                         updatedPropertyKey,
-                        masterConfig.getFieldGroup(),
-                        masterConfig.getApplication(),
+                        fieldGroup,
+                        application,
                         updatedPropertyValue,
                         masterConfig.getTarget(),
                         masterConfig.getType(),
