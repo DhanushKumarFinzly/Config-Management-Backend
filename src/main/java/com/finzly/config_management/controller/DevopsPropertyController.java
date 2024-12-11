@@ -16,15 +16,6 @@ import java.util.List;
 @RequestMapping(value = "/api")
 public class DevopsPropertyController {
 
-    @Autowired
-    DevopsPropertyService devopsPropertyService;
-    @Autowired
-    DevopsPropertyRepo devopsPropertyRepo;
-
-    @GetMapping("get")
-    public List<DevopsProperties> get(){
-        return  devopsPropertyRepo.findAll();
-    }
 
 
 }

@@ -20,7 +20,6 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/api")
 public class TenantEnvController {
 
     @Autowired
@@ -49,7 +48,7 @@ public class TenantEnvController {
         }
     }
 
-    @GetMapping("/{tenant}")
+    @GetMapping("/tenants/{tenant}")
     public ResponseEntity<ApiResponse<EnvironmentsDTO>> getEnvironmentsByTenant(@PathVariable String tenant) {
         try {
             EnvironmentsDTO environments=tenantEnvService.getEnvironmentsForTenant(tenant);
@@ -63,7 +62,7 @@ public class TenantEnvController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/tenant-env")
     public ResponseEntity<ApiResponse<String>> saveTenantEnv(@RequestBody TenantEnvDto tenantEnv){
         try{
             tenantEnvService.saveTenantEnv(tenantEnv);

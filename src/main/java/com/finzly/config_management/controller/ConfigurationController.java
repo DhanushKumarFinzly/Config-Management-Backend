@@ -6,6 +6,7 @@ import com.finzly.config_management.Exception.ConfigurationSaveException;
 import com.finzly.config_management.Exception.UpdateFailedException;
 import com.finzly.config_management.service.ConfigurationService;
 import com.finzly.config_management.Exception.DataNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,13 @@ import java.util.Map;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/api")
+@Tag(name="Configuration")
 public class ConfigurationController {
 
     @Autowired
     ConfigurationService configurationService;
 
-    @GetMapping("/{tenant}/{environment}")
+    @GetMapping("properties/{tenant}/{environment}")
     public ResponseEntity<ApiResponse<List<PropertyDTO>>> getProperty(
             @PathVariable String tenant,
             @PathVariable String environment)
@@ -36,7 +37,7 @@ public class ConfigurationController {
         }
     }
 
-    @PostMapping("/tenant-env-configuration")
+    @PostMapping("/properties")
     public ResponseEntity<ApiResponse<String>> saveTenantEnvProperties(
             @RequestBody TenantEnvPropertiesDTO tenantEnvPropertiesDTO)
             throws ConfigurationSaveException {
@@ -49,7 +50,7 @@ public class ConfigurationController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/properties/{id}")
     public ResponseEntity<ApiResponse<String>> deleteProperties(@PathVariable String id){
         try {
             configurationService.deleteProperties(id);
@@ -67,7 +68,7 @@ public class ConfigurationController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/properties")
     public ResponseEntity<ApiResponse<String>> updateProperties(
             @RequestBody PropertyDTO propertyDTO)
             throws UpdateFailedException {
@@ -84,7 +85,7 @@ public class ConfigurationController {
         }
     }
 
-    @GetMapping("{tenant1}/{environment1}/{tenant2}/{environment2}")
+    @GetMapping("properties/compare/{tenant1}/{environment1}/{tenant2}/{environment2}")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> tenantEnvComparison(
             @PathVariable String tenant1,
             @PathVariable String environment1,
@@ -100,7 +101,7 @@ public class ConfigurationController {
         }
     }
 
-    @PutMapping("{tenant}/{environment}/{propertyKey}/{newValue}")
+    @PutMapping("properties/inter-change/{tenant}/{environment}/{propertyKey}/{newValue}")
     public ResponseEntity<ApiResponse<String>> changeProperty(
             @PathVariable String tenant,
             @PathVariable String environment,
@@ -116,7 +117,7 @@ public class ConfigurationController {
         }
     }
 
-    @PutMapping("/{tenant}/{environment}")
+    @PutMapping("properties/update/{tenant}/{environment}")
     public ResponseEntity<ApiResponse<String>> updateTenantAndEnv(@PathVariable String tenant,@PathVariable String environment) throws DataNotFoundException {
 
         try{
