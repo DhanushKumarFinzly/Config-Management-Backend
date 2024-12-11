@@ -25,4 +25,10 @@ public interface ConfigurationRepo extends JpaRepository<Configuration, UUID> {
     @Transactional
     @Query("DELETE FROM Configuration c WHERE c.tenantEnv = :tenantEnvId")
     void deleteByTenantEnvId(UUID tenantEnvId);
+
+    @Query("SELECT c.application FROM Configuration c WHERE c.tenantEnv = :tenantEnvId")
+    List<String> findApplicationById(UUID tenantEnvId);
+
+    @Query("SELECT c.fieldGroup FROM Configuration c WHERE c.tenantEnv = :tenantEnvId")
+    List<String> findFieldGroupById(UUID tenantEnvId);
 }

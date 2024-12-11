@@ -49,19 +49,19 @@ public class TenantEnvController {
         }
     }
 
-//    @GetMapping("/{tenant}")
-//    public ResponseEntity<ApiResponse<EnvironmentsDTO>> getEnvironmentsByTenant(@PathVariable String tenant) {
-//        try {
-//            EnvironmentsDTO environments=tenantEnvService.getEnvironmentsForTenant(tenant);
-//            return ResponseEntity.ok(new ApiResponse<>("Environemnts Fetched successfully for given tenant", HttpStatus.OK.value(),environments));
-//        }
-//        catch (EntityNotFoundException e) {
-//            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
-//        } catch (Exception e) {
-//            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
-//
-//        }
-//    }
+    @GetMapping("/{tenant}")
+    public ResponseEntity<ApiResponse<EnvironmentsDTO>> getEnvironmentsByTenant(@PathVariable String tenant) {
+        try {
+            EnvironmentsDTO environments=tenantEnvService.getEnvironmentsForTenant(tenant);
+            return ResponseEntity.ok(new ApiResponse<>("Environemnts Fetched successfully for given tenant", HttpStatus.OK.value(),environments));
+        }
+        catch (EntityNotFoundException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+
+        }
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<String>> saveTenantEnv(@RequestBody TenantEnvDto tenantEnv){
