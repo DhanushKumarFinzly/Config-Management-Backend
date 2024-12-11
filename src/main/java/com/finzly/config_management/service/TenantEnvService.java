@@ -48,21 +48,22 @@ public class TenantEnvService {
     public List<String> getEnvironments() {
         return tenantEnvRepo.findDistinctEnvironments();
     }
-
-    public EnvironmentsDTO getEnvironmentsForTenant(String tenant) {
-        List<String> existingTenantName= tenantEnvRepo.findTenantNameByTenant(tenant);
-        List<String> environments=tenantEnvRepo.findEnvironmentsByTenant(tenant);
-        if(existingTenantName.isEmpty()){
-            throw new EntityNotFoundException("No tenantName Found For this Tenant"+tenant);
-        }
-        else if(environments.isEmpty()){
-            throw new EntityNotFoundException("No Environments Found For this Tenant"+tenant);
-        }
-        else {
-            String tenantName=existingTenantName.get(0);
-            return new EnvironmentsDTO(tenantName, environments);
-        }
-    }
+//
+//    public EnvironmentsDTO getEnvironmentsForTenant(String tenant) {
+//        List<String> existingTenantName= tenantEnvRepo.findTenantNameByTenant(tenant);
+//        List<String> environments=tenantEnvRepo.findEnvironmentsByTenant(tenant);
+//
+//        if(existingTenantName.isEmpty()){
+//            throw new EntityNotFoundException("No tenantName Found For this Tenant"+tenant);
+//        }
+//        else if(environments.isEmpty()){
+//            throw new EntityNotFoundException("No Environments Found For this Tenant"+tenant);
+//        }
+//        else {
+//            String tenantName=existingTenantName.get(0);
+//            return new EnvironmentsDTO(tenantName, environments);
+//        }
+//    }
 
     public void saveTenantEnv(TenantEnvDto tenantEnvDto) throws TenantEnvCreationException {
         try {

@@ -49,6 +49,9 @@ public class TenantEnvDto {
         this.environment = environment;
     }
 
+    public TenantEnvDto() {
+    }
+
     public TenantEnvDto(String tenant, String tenantName, String environment) {
         this.tenant = tenant;
         this.tenantName = tenantName;
