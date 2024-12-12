@@ -207,20 +207,20 @@ public class ConfigurationService {
                         String updatedPropertyKey = property.getPropertyKey();
                         if (updatedPropertyKey != null) {
                             if (updatedPropertyKey.contains("${env}")) {
-                                updatedPropertyKey = updatedPropertyKey.replace("${env}", environment);
+                                updatedPropertyKey = updatedPropertyKey.replace("${env}", environment.toLowerCase());
                             }
                             if (updatedPropertyKey.contains("TENANT_NAME_ID")) {
-                                updatedPropertyKey = updatedPropertyKey.replace("TENANT_NAME_ID", tenant);
+                                updatedPropertyKey = updatedPropertyKey.replace("TENANT_NAME_ID", tenant.toLowerCase());
                             }
                             property.setPropertyKey(updatedPropertyKey);
                         }
                         if (property.getPropertyValue() != null) {
                             String updatedPropertyValue = property.getPropertyValue();
                             if (updatedPropertyValue.contains("${env}")) {
-                                updatedPropertyValue = updatedPropertyValue.replace("${env}", environment);
+                                updatedPropertyValue = updatedPropertyValue.replace("${env}", environment.toLowerCase());
                             }
                             if (updatedPropertyValue.contains("TENANT_NAME_ID")) {
-                                updatedPropertyValue = updatedPropertyValue.replace("TENANT_NAME_ID", tenant);
+                                updatedPropertyValue = updatedPropertyValue.replace("TENANT_NAME_ID", tenant.toLowerCase());
                             }
                             property.setPropertyValue(updatedPropertyValue);
                         }
@@ -256,7 +256,7 @@ public class ConfigurationService {
             List<String> applications=configurationRepo.findApplicationById(tenantEnvId2);
             List<String> fieldGroups=configurationRepo.findFieldGroupById(tenantEnvId2);
             TenantEnvDto tenantEnvDto = new TenantEnvDto();
-            tenantEnvDto.setTenant(tenant1.toUpperCase());
+            tenantEnvDto.setTenant(tenant1);
             tenantEnvDto.setTenantName(tenant1.toLowerCase());// Set tenant1
             tenantEnvDto.setEnvironment(env1);         // Set env1
             tenantEnvDto.setApplication(applications.get(0));  // Set application from list
