@@ -4,6 +4,7 @@ import com.finzly.config_management.DTO.EnvironmentsDTO;
 import com.finzly.config_management.DTO.TenantDto;
 import com.finzly.config_management.DTO.TenantEnvDto;
 import com.finzly.config_management.Exception.TenantEnvCreationException;
+import com.finzly.config_management.Exception.UpdateFailedException;
 import com.finzly.config_management.Repository.TenantEnvRepo;
 import com.finzly.config_management.model.TenantEnv;
 import com.finzly.config_management.service.TenantEnvService;
@@ -63,13 +64,24 @@ public class TenantEnvController {
     }
 
     @PostMapping("/tenant-env")
-    public ResponseEntity<ApiResponse<String>> saveTenantEnv(@RequestBody TenantEnvDto tenantEnv){
-        try{
-            tenantEnvService.saveTenantEnv(tenantEnv);
-            return ResponseEntity.ok(new ApiResponse<>("TenantEnv Added Successfully..!",HttpStatus.CREATED.value()));
-        }
-        catch (TenantEnvCreationException e) {
-            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.value()));
+    public ResponseEntity<ApiResponse<String>> saveTenantEnvAndAddProperties(@RequestBody TenantEnvDto tenantEnvDto) {
+        try {
+            tenantEnvService.saveTenantEnvAndAddProperties(tenantEnvDto);
+            return ResponseEntity.ok(new ApiResponse<>("TenantEnv Added Successfully..!", HttpStatus.CREATED.value()));
+        } catch (TenantEnvCreationException e) {
+            // Handling TenantEnvCreationException
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        } catch (UpdateFailedException e) {
+            // Handling UpdateFailedException
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        } catch (Exception e) {
+            // Handling any other exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
+
+
 }

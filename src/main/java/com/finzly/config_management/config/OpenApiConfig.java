@@ -14,6 +14,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("My Spring Boot API")
                         .version("1.0")
-                        .description("Documentation for my Spring Boot application with /api/ base path"));
+                        .description("Documentation for my Spring Boot application. No base path is assumed."));
     }
 }

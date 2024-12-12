@@ -38,6 +38,7 @@ public class TenantEnvService {
     DevopsPropertyRepo devopsPropertyRepo;
 
 
+
     public List<TenantDto> getTenants() {
         List<Object[]> tenants = tenantEnvRepo.findDistinctTenantsAndTenantName();
         List<TenantDto> tenantList = new ArrayList<>();
@@ -79,26 +80,26 @@ public class TenantEnvService {
             tenantEnv.setCreatedAt(LocalDateTime.now());
             tenantEnv.setUpdatedAt(LocalDateTime.now());
             tenantEnvRepo.save(tenantEnv);
-            addPropertiesForNewTenant(tenantEnvDto.getTenant(), tenantEnvDto.getEnvironment(),tenantEnvDto.getApplication(),tenantEnvDto.getFieldGroup());
         } catch (Exception e) {
             throw new TenantEnvCreationException("Error while adding tenant environment data: ");
         }
     }
 
-    public void addPropertiesForNewTenant(String newTenant, String newEnv,String application,String fieldGroup) throws UpdateFailedException {
+    public void saveTenantEnvAndAddProperties(TenantEnvDto tenantEnvDto) throws UpdateFailedException,TenantEnvCreationException {
         try {
+            saveTenantEnv(tenantEnvDto);
             List<MasterConfiguration> masterConfigurations = masterConfigurationRepo.findAll();
-            String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(newTenant, newEnv);
+            String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(tenantEnvDto.getTenant(), tenantEnvDto.getEnvironment());
             List<Configuration> configurations = new ArrayList<>();
             for (MasterConfiguration masterConfig : masterConfigurations) {
-                String updatedPropertyKey = masterConfig.getPropertyKey().replace("TENANT_NAME_ID", newTenant);
+                String updatedPropertyKey = masterConfig.getPropertyKey().replace("TENANT_NAME_ID", tenantEnvDto.getTenant());
                 String updatedPropertyValue = masterConfig.getPropertyValue();
                 if (updatedPropertyValue != null) {
                     if(updatedPropertyValue.contains("${env}")){
-                        updatedPropertyValue = updatedPropertyValue.replace("${env}", newEnv);
+                        updatedPropertyValue = updatedPropertyValue.replace("${env}", tenantEnvDto.getEnvironment().toLowerCase());
                     }
                     if(updatedPropertyValue.contains("TENANT_NAME_ID")){
-                        updatedPropertyValue = updatedPropertyValue.replace("TENANT_NAME_ID", newTenant);
+                        updatedPropertyValue = updatedPropertyValue.replace("TENANT_NAME_ID", tenantEnvDto.getTenant().toLowerCase());
                     }
                     if (updatedPropertyValue.startsWith("runtime")) {
                         updatedPropertyValue = "NA";
@@ -106,7 +107,7 @@ public class TenantEnvService {
                     if (updatedPropertyValue.startsWith("devops.")) {
                         String devopsKey = updatedPropertyValue.substring("devops.".length());
 
-                        Optional<DevopsProperties> devopsProperty = devopsPropertyRepo.findByPropKeyAndEnv(devopsKey, newEnv);
+                        Optional<DevopsProperties> devopsProperty = devopsPropertyRepo.findByPropKeyAndEnv(devopsKey, tenantEnvDto.getEnvironment());
                         if (devopsProperty.isPresent()) {
                             updatedPropertyValue = devopsProperty.get().getValue();
 
@@ -119,8 +120,8 @@ public class TenantEnvService {
                 }
                 Configuration configuration = new Configuration(
                         updatedPropertyKey,
-                        fieldGroup,
-                        application,
+                        tenantEnvDto.getFieldGroup(),
+                        tenantEnvDto.getApplication(),
                         updatedPropertyValue,
                         masterConfig.getTarget(),
                         masterConfig.getType(),
@@ -137,7 +138,7 @@ public class TenantEnvService {
             configurationRepo.saveAll(configurations);
             System.out.println("Saved configurations: " + configurations.size());
         } catch (Exception e) {
-            throw new UpdateFailedException("Failed to add New properties for New tenant: " + newTenant);
+            throw new UpdateFailedException("Failed to add New properties for New tenant: " + tenantEnvDto.getTenant());
         }
     }
      

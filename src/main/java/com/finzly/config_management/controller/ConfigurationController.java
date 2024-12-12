@@ -142,5 +142,21 @@ public class ConfigurationController {
         }
     }
 
+    @GetMapping("/compare-key/{tenant1}/{environment1}/{tenant2}/{environment2}")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> tenantEnvKeyComparison(
+            @PathVariable String tenant1,
+            @PathVariable String environment1,
+            @PathVariable String tenant2,
+            @PathVariable String environment2
+    )
+    {
+        try {
+            List<Map<String, Object>> result = configurationService.tenantEnvKeyComparison(tenant1, environment1, tenant2, environment2);
+            return ResponseEntity.ok(new ApiResponse<>("Property Fetched Successfully!",HttpStatus.OK.value(), result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+    }
+
 
 }

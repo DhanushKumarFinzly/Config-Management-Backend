@@ -1,6 +1,7 @@
 package com.finzly.config_management.service;
 
 import com.finzly.config_management.DTO.PropertyDTO;
+import com.finzly.config_management.DTO.TenantEnvDto;
 import com.finzly.config_management.DTO.TenantEnvPropertiesDTO;
 import com.finzly.config_management.Exception.ConfigurationSaveException;
 import com.finzly.config_management.Exception.DataNotFoundException;
@@ -22,6 +23,9 @@ public class ConfigurationService {
 
     @Autowired
     ConfigurationRepo configurationRepo;
+
+    @Autowired
+    TenantEnvService tenantEnvService;
 
     public List<PropertyDTO> getProperty(String tenant, String environment) throws DataNotFoundException {
         String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(tenant, environment);
@@ -116,7 +120,7 @@ public class ConfigurationService {
     }
 
     public List<Map<String, Object>> tenantEnvComparison(
-            String tenant1, String environment1, String tenant2, String environment2) {
+        String tenant1, String environment1, String tenant2, String environment2) {
         String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1, environment1);
         String uuid2 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant2, environment2);
         UUID id1, id2;
@@ -235,32 +239,46 @@ public class ConfigurationService {
 
     public void clonePropertyForNewTenant(String tenant1, String env1, String tenant2, String env2) {
         try {
-            String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1, env1);
+
             String uuid2 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant2, env2);
-            if (uuid1 == null || uuid1.isEmpty()) {
+
+            if (uuid2 == null || uuid2.isEmpty()) {
                 throw new IllegalArgumentException("No ID found for tenant: " + tenant1 + " and environment: " + env1);
             }
-            if (uuid2 == null || uuid2.isEmpty()) {
-                throw new IllegalArgumentException("No ID found for tenant: " + tenant2 + " and environment: " + env2);
-            }
+
             tenant1 = tenant1.toLowerCase();
             env1 = env1.toLowerCase();
             tenant2 = tenant2.toLowerCase();
             env2 = env2.toLowerCase();
-            UUID tenantEnvId1 = UUID.fromString(uuid1);
             UUID tenantEnvId2 = UUID.fromString(uuid2);
-            List<Configuration> configurations = configurationRepo.findByTenantEnvId(tenantEnvId1);
+
+
+            List<String> applications=configurationRepo.findApplicationById(tenantEnvId2);
+            List<String> fieldGroups=configurationRepo.findFieldGroupById(tenantEnvId2);
+            TenantEnvDto tenantEnvDto = new TenantEnvDto();
+            tenantEnvDto.setTenant(tenant1.toUpperCase());
+            tenantEnvDto.setTenantName(tenant1.toLowerCase());// Set tenant1
+            tenantEnvDto.setEnvironment(env1);         // Set env1
+            tenantEnvDto.setApplication(applications.get(0));  // Set application from list
+            tenantEnvDto.setFieldGroup(fieldGroups.get(0));
+            tenantEnvService.saveTenantEnv(tenantEnvDto);
+            String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1.toUpperCase(), env1);
+            if (uuid1 == null || uuid1.isEmpty()) {
+                throw new IllegalArgumentException("No ID found for tenant: " + tenant1 + " and environment: " + env1);
+            }
+            UUID tenantEnvId1 = UUID.fromString(uuid1);
+            List<Configuration> configurations = configurationRepo.findByTenantEnvId(tenantEnvId2);
             List<Configuration> newConfigurations = new ArrayList<>();
             for (Configuration config : configurations) {
                 String updatedPropertyKey = config.getPropertyKey();
                 String updatedPropertyValue = config.getPropertyValue();
                 if (updatedPropertyKey != null) {
-                    updatedPropertyKey = updatedPropertyKey.replace(env1, env2).replace(tenant1, tenant2);
+                    updatedPropertyKey = updatedPropertyKey.replace(env2, env1).replace(tenant2, tenant1);
                 } else {
                     updatedPropertyKey = "NA";
                 }
                 if (updatedPropertyValue != null) {
-                    updatedPropertyValue = updatedPropertyValue.replace(env1, env2).replace(tenant1, tenant2);
+                    updatedPropertyValue = updatedPropertyValue.replace(env2, env1).replace(tenant2, tenant1);
                 } else {
                     updatedPropertyValue = "NA";
                 }
@@ -277,7 +295,7 @@ public class ConfigurationService {
                         config.getProduct(),
                         config.getAppId(),
                         config.getIsSecureString(),
-                        tenantEnvId2
+                        tenantEnvId1
                 );
                 newConfigurations.add(newConfiguration);
             }
@@ -287,5 +305,66 @@ public class ConfigurationService {
         } catch (Exception e) {
             throw new RuntimeException("Error while cloning properties: " + e.getMessage(), e);
         }
+    }
+
+
+    public List<Map<String, Object>> tenantEnvKeyComparison(
+            String tenant1, String environment1, String tenant2, String environment2) {
+
+        String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1, environment1);
+        String uuid2 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant2, environment2);
+        UUID id1, id2;
+        if (uuid1 == null) {
+            throw new IllegalArgumentException("No ID Found For this Tenant: " + tenant1 + " and Environment: " + environment1);
+        }
+        else if (uuid2 == null) {
+            throw new IllegalArgumentException("No ID Found For this Tenant: " + tenant2 + " and Environment: " + environment2);
+        }
+        else {
+            id1 = UUID.fromString(uuid1);
+            id2 = UUID.fromString(uuid2);
+        }
+        List<Configuration> properties1 = configurationRepo.findByTenantEnvId(id1);
+        List<Configuration> properties2 = configurationRepo.findByTenantEnvId(id2);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Configuration config1 : properties1) {
+            String key1 = config1.getPropertyKey();
+
+            for (Configuration config2 : properties2) {
+                String key2 = config2.getPropertyKey();
+                if (key1.contains(tenant1) && key2.contains(tenant2)) {
+                    // Normalize keys by replacing tenant names
+                    String normalizedKey1 = key1.replace(tenant1, "{tenant}");
+                    String normalizedKey2 = key2.replace(tenant2, "{tenant}");
+
+                    // Check if normalized keys are identical
+                    if (normalizedKey1.equals(normalizedKey2)) {
+                        // Create an entry for list1
+                        Map<String, Object> list1Entry = new HashMap<>();
+                        list1Entry.put("propertyKey", key1);
+                        list1Entry.put("propertyValue", config1.getPropertyValue());
+
+                        // Create an entry for list2
+                        Map<String, Object> list2Entry = new HashMap<>();
+                        list2Entry.put("propertyKey", key2);
+                        list2Entry.put("propertyValue", config2.getPropertyValue());
+
+                        // Add both entries to the result list
+                        result.add(list1Entry);
+                        result.add(list2Entry);
+
+                        // No need to compare further for this key1
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

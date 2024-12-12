@@ -9,6 +9,7 @@ public class TenantEnvDto {
     private String fieldGroup;
 
 
+
     public String getApplication() {
         return application;
     }
@@ -24,6 +25,8 @@ public class TenantEnvDto {
     public void setFieldGroup(String fieldGroup) {
         this.fieldGroup = fieldGroup;
     }
+
+
 
     public String getTenant() {
         return tenant;
@@ -52,17 +55,13 @@ public class TenantEnvDto {
     public TenantEnvDto() {
     }
 
-    public TenantEnvDto(String tenant, String tenantName, String environment) {
-        this.tenant = tenant;
-        this.tenantName = tenantName;
-        this.environment = environment;
-    }
     public TenantEnvDto(String tenant, String tenantName, String environment, String application, String fieldGroup) {
         this.tenant = tenant;
         this.tenantName = tenantName;
         this.environment = environment;
         this.application = application;
         this.fieldGroup = fieldGroup;
+
     }
 
 }
