@@ -53,7 +53,7 @@ public class TenantEnvController {
     public ResponseEntity<ApiResponse<EnvironmentsDTO>> getEnvironmentsByTenant(@PathVariable String tenant) {
         try {
             EnvironmentsDTO environments=tenantEnvService.getEnvironmentsForTenant(tenant);
-            return ResponseEntity.ok(new ApiResponse<>("Environemnts Fetched successfully for given tenant", HttpStatus.OK.value(),environments));
+            return ResponseEntity.ok(new ApiResponse<>("Environments Fetched successfully for given tenant", HttpStatus.OK.value(),environments));
         }
         catch (EntityNotFoundException e) {
             return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));

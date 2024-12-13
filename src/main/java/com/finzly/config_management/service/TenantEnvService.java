@@ -53,9 +53,6 @@ public class TenantEnvService {
     public EnvironmentsDTO getEnvironmentsForTenant(String tenant) {
         List<String> existingTenantName= tenantEnvRepo.findTenantNameByTenant(tenant);
         List<String> environments=tenantEnvRepo.findEnvironmentsByTenant(tenant);
-         UUID tenantEnvId = UUID.fromString(tenantEnvRepo.findIdByTenantAndEnvironment(tenant, environments.get(0)));
-         List<String> applications=configurationRepo.findApplicationById(tenantEnvId);
-         List<String> fieldGroups=configurationRepo.findFieldGroupById(tenantEnvId);
         if(existingTenantName.isEmpty()){
             throw new EntityNotFoundException("No tenantName Found For this Tenant"+tenant);
         }
@@ -64,34 +61,44 @@ public class TenantEnvService {
         }
         else {
             String tenantName=existingTenantName.get(0);
-            String application=applications.get(0);
-            String fieldGroup= fieldGroups.get(0);
-            return new EnvironmentsDTO(tenantName, environments,application,fieldGroup);
+            return new EnvironmentsDTO(tenantName, environments);
         }
     }
 
 
     public void saveTenantEnv(TenantEnvDto tenantEnvDto) throws TenantEnvCreationException {
         try {
-            TenantEnv tenantEnv = new TenantEnv();
+            TenantEnv tenantEnv;
+
+            // Check if an entry with PENDING exists for the tenant
+            if (!tenantEnvDto.getEnvironment().equals("PENDING")) {
+                Optional<TenantEnv> existingPendingEnv = tenantEnvRepo.findByTenantAndEnvironment(tenantEnvDto.getTenant(), "PENDING");
+
+                if (existingPendingEnv.isPresent()) {
+                    // Update the PENDING record with the actual environment
+                    tenantEnv = existingPendingEnv.get();
+                    tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
+                    tenantEnv.setUpdatedAt(LocalDateTime.now());
+                    tenantEnvRepo.save(tenantEnv);
+                    return;
+                }
+            }
+
+            // If not updating PENDING, create a new entry
+            tenantEnv = new TenantEnv();
             tenantEnv.setTenant(tenantEnvDto.getTenant());
             tenantEnv.setTenantName(tenantEnvDto.getTenantName());
             tenantEnv.setCreatedAt(LocalDateTime.now());
             tenantEnv.setUpdatedAt(LocalDateTime.now());
             tenantEnv.setStatus("Active");
-            if(tenantEnvDto.getEnvironment().equals("PENDING")){
-                tenantEnv.setEnvironment("PENDING");
-                tenantEnvRepo.save(tenantEnv);
-            }
-            else{
-                tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
-                tenantEnvRepo.save(tenantEnv);
-            }
-        }
-        catch (Exception e) {
-            throw new TenantEnvCreationException("Error while adding tenant data: ");
+            tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
+            tenantEnvRepo.save(tenantEnv);
+
+        } catch (Exception e) {
+            throw new TenantEnvCreationException("Error while adding/updating tenant data: " + e.getMessage());
         }
     }
+
 
 
 

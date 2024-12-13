@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -26,5 +27,7 @@ public interface TenantEnvRepo extends JpaRepository<TenantEnv, UUID> {
 
     @Query("SELECT id FROM TenantEnv  WHERE tenant = :tenant AND environment = :environment")
     List<String> findAllIdByTenantAndEnvironment(String tenant,String environment);
+
+    Optional<TenantEnv> findByTenantAndEnvironment(String tenant, String environment);
 
 }
