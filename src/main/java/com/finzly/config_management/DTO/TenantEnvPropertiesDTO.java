@@ -5,15 +5,21 @@ public class TenantEnvPropertiesDTO {
     private String environment;
     private String propertyKey;
     private String propertyValue;
+    private String application;
+    private String field_group;
+    private String target;
+    private String type;
 
-    public TenantEnvPropertiesDTO(String tenant, String environment, String propertyKey, String propertyValue) {
+    public TenantEnvPropertiesDTO(String tenant, String environment, String propertyKey, String propertyValue, String application, String field_group, String target, String type) {
         this.tenant = tenant;
         this.environment = environment;
         this.propertyKey = propertyKey;
         this.propertyValue = propertyValue;
+        this.application = application;
+        this.field_group = field_group;
+        this.target = target;
+        this.type = type;
     }
-
-
 
     public String getTenant() {
         return tenant;
@@ -22,7 +28,6 @@ public class TenantEnvPropertiesDTO {
     public void setTenant(String tenant) {
         this.tenant = tenant;
     }
-
 
     public String getEnvironment() {
         return environment;
@@ -46,5 +51,37 @@ public class TenantEnvPropertiesDTO {
 
     public void setPropertyValue(String propertyValue) {
         this.propertyValue = propertyValue;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public String getField_group() {
+        return field_group;
+    }
+
+    public void setField_group(String field_group) {
+        this.field_group = field_group;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

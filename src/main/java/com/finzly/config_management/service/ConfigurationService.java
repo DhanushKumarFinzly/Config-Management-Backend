@@ -36,7 +36,7 @@ public class ConfigurationService {
                 List<Configuration> properties = configurationRepo.findByTenantEnvId(uuid);
                 if (!properties.isEmpty()) {
                     return properties.stream()
-                            .map(property -> new PropertyDTO(property.getId(), property.getPropertyKey(), property.getPropertyValue()))
+                            .map(property -> new PropertyDTO(property.getId(), property.getPropertyKey(), property.getPropertyValue(), property.getApplication(), property.getFieldGroup(),property.getType(),property.getTarget()))
                             .collect(Collectors.toList());
                 }else {
                     throw new DataNotFoundException("No properties found for the given tenant-env ID: " + tenantEnvId);
@@ -60,15 +60,15 @@ public class ConfigurationService {
                 }
                 Configuration configuration = new Configuration();
                 configuration.setAppId("App123");
-                configuration.setApplication("Application123");
-                configuration.setFieldGroup("Global");
+                configuration.setApplication(tenantEnvPropertiesDTO.getApplication());
+                configuration.setFieldGroup(tenantEnvPropertiesDTO.getField_group());
                 configuration.setCreatedAt(LocalDateTime.now());
                 configuration.setUpdatedAt(LocalDateTime.now());
                 configuration.setIsSecureString(1);
                 configuration.setStatus("Active");
                 configuration.setProduct("Product123");
-                configuration.setTarget("Config");
-                configuration.setType("Environment");
+                configuration.setTarget(tenantEnvPropertiesDTO.getTarget());
+                configuration.setType(tenantEnvPropertiesDTO.getType());
                 configuration.setPropertyKey(tenantEnvPropertiesDTO.getPropertyKey());
                 configuration.setPropertyValue(tenantEnvPropertiesDTO.getPropertyValue());
                 configuration.setTenantEnv(uuid);
@@ -108,6 +108,10 @@ public class ConfigurationService {
             Configuration existingProperty = properties.get();
             existingProperty.setPropertyKey(propertyDTO.getPropertyKey());
             existingProperty.setPropertyValue(propertyDTO.getPropertyValue());
+            existingProperty.setApplication(propertyDTO.getApplication());
+            existingProperty.setFieldGroup(propertyDTO.getFieldGroup());
+            existingProperty.setTarget(propertyDTO.getTarget());
+            existingProperty.setType(propertyDTO.getType());
             configurationRepo.save(existingProperty);
         }
         catch (Exception e) {
