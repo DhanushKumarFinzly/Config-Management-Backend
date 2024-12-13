@@ -68,9 +68,19 @@ public class TenantEnvService {
 
     public void saveTenantEnv(TenantEnvDto tenantEnvDto) throws TenantEnvCreationException {
         try {
+            // If the environment is 'PENDING', check if a record already exists for the same tenant
+            if (tenantEnvDto.getEnvironment().equals("PENDING")) {
+                Optional<TenantEnv> existingPendingEnv = tenantEnvRepo.findByTenantAndEnvironment(tenantEnvDto.getTenant(), "PENDING");
+
+                // If the environment is PENDING and exists, throw an exception (do not allow duplicate tenant with 'PENDING')
+                if (existingPendingEnv.isPresent()) {
+                    throw new TenantEnvCreationException("Tenant already Exists!");
+                }
+            }
+
             TenantEnv tenantEnv;
 
-            // Check if an entry with PENDING exists for the tenant
+            // Check if an entry with the PENDING environment exists for the tenant (only if not PENDING)
             if (!tenantEnvDto.getEnvironment().equals("PENDING")) {
                 Optional<TenantEnv> existingPendingEnv = tenantEnvRepo.findByTenantAndEnvironment(tenantEnvDto.getTenant(), "PENDING");
 
@@ -95,9 +105,10 @@ public class TenantEnvService {
             tenantEnvRepo.save(tenantEnv);
 
         } catch (Exception e) {
-            throw new TenantEnvCreationException("Error while adding/updating tenant data: " + e.getMessage());
+            throw new TenantEnvCreationException(e.getMessage());
         }
     }
+
 
 
 

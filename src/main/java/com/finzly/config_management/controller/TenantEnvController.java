@@ -68,11 +68,13 @@ public class TenantEnvController {
         try {
             tenantEnvService.saveTenantEnv(tenantEnvDto);
             return ResponseEntity.ok(new ApiResponse<>("Tenant Added Successfully..!", HttpStatus.CREATED.value()));
+        } catch (TenantEnvCreationException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
+
 
     @PostMapping("/tenant-env")
     public ResponseEntity<ApiResponse<String>> saveEnvAndAddProperties(@RequestBody TenantEnvDto tenantEnvDto) {
@@ -81,16 +83,11 @@ public class TenantEnvController {
             return ResponseEntity.ok(new ApiResponse<>("Env And Default Properties Added Successfully..!", HttpStatus.CREATED.value()));
         } catch (TenantEnvCreationException e) {
             // Handling TenantEnvCreationException
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         } catch (UpdateFailedException e) {
-            // Handling UpdateFailedException
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         } catch (Exception e) {
-            // Handling any other exception
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            return ResponseEntity.ok(new ApiResponse<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
 
