@@ -70,22 +70,32 @@ public class TenantEnvService {
         }
     }
 
+
     public void saveTenantEnv(TenantEnvDto tenantEnvDto) throws TenantEnvCreationException {
         try {
             TenantEnv tenantEnv = new TenantEnv();
             tenantEnv.setTenant(tenantEnvDto.getTenant());
             tenantEnv.setTenantName(tenantEnvDto.getTenantName());
-            tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
-            tenantEnv.setStatus("Active");
             tenantEnv.setCreatedAt(LocalDateTime.now());
             tenantEnv.setUpdatedAt(LocalDateTime.now());
-            tenantEnvRepo.save(tenantEnv);
-        } catch (Exception e) {
-            throw new TenantEnvCreationException("Error while adding tenant environment data: ");
+            tenantEnv.setStatus("Active");
+            if(tenantEnvDto.getEnvironment().equals("PENDING")){
+                tenantEnv.setEnvironment("PENDING");
+                tenantEnvRepo.save(tenantEnv);
+            }
+            else{
+                tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
+                tenantEnvRepo.save(tenantEnv);
+            }
+        }
+        catch (Exception e) {
+            throw new TenantEnvCreationException("Error while adding tenant data: ");
         }
     }
 
-    public void saveTenantEnvAndAddProperties(TenantEnvDto tenantEnvDto) throws UpdateFailedException,TenantEnvCreationException {
+
+
+    public void saveEnvAndAddProperties(TenantEnvDto tenantEnvDto) throws UpdateFailedException,TenantEnvCreationException {
         try {
             saveTenantEnv(tenantEnvDto);
             List<MasterConfiguration> masterConfigurations = masterConfigurationRepo.findAll();
@@ -120,8 +130,8 @@ public class TenantEnvService {
                 }
                 Configuration configuration = new Configuration(
                         updatedPropertyKey,
-                        tenantEnvDto.getFieldGroup(),
-                        tenantEnvDto.getApplication(),
+                        masterConfig.getFieldGroup(),
+                        masterConfig.getApplication(),
                         updatedPropertyValue,
                         masterConfig.getTarget(),
                         masterConfig.getType(),
@@ -142,8 +152,4 @@ public class TenantEnvService {
         }
     }
      
-
-    
-
-
 }

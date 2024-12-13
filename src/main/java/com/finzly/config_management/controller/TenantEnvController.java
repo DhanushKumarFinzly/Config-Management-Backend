@@ -63,11 +63,22 @@ public class TenantEnvController {
         }
     }
 
-    @PostMapping("/tenant-env")
-    public ResponseEntity<ApiResponse<String>> saveTenantEnvAndAddProperties(@RequestBody TenantEnvDto tenantEnvDto) {
+    @PostMapping("/tenant")
+    public ResponseEntity<ApiResponse<String>> saveTenant(@RequestBody TenantEnvDto tenantEnvDto) {
         try {
-            tenantEnvService.saveTenantEnvAndAddProperties(tenantEnvDto);
-            return ResponseEntity.ok(new ApiResponse<>("TenantEnv Added Successfully..!", HttpStatus.CREATED.value()));
+            tenantEnvService.saveTenantEnv(tenantEnvDto);
+            return ResponseEntity.ok(new ApiResponse<>("Tenant Added Successfully..!", HttpStatus.CREATED.value()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+    }
+
+    @PostMapping("/tenant-env")
+    public ResponseEntity<ApiResponse<String>> saveEnvAndAddProperties(@RequestBody TenantEnvDto tenantEnvDto) {
+        try {
+            tenantEnvService.saveEnvAndAddProperties(tenantEnvDto);
+            return ResponseEntity.ok(new ApiResponse<>("Env And Default Properties Added Successfully..!", HttpStatus.CREATED.value()));
         } catch (TenantEnvCreationException e) {
             // Handling TenantEnvCreationException
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
