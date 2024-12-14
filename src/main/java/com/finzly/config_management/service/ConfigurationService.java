@@ -370,4 +370,20 @@ public class ConfigurationService {
         return new CompareDTO(result,result1);
     }
 
+    public List<PropertyDTO> getPropertiesByIds(List<UUID> selectedIds) {
+        List<Configuration> configurations = configurationRepo.findByIds(selectedIds);
+
+        return configurations.stream()
+                .map(config -> new PropertyDTO(
+                        config.getId(),                  // UUID
+                        config.getPropertyKey(),         // Property Key (String)
+                        config.getPropertyValue(),       // Property Value (String)
+                        config.getApplication(),         // Application (String)
+                        config.getFieldGroup(),          // Field Group (String)
+                        config.getType(),                // Type (String)
+                        config.getTarget()               // Target (String)
+                ))
+                .collect(Collectors.toList());
+    }
+
 }
