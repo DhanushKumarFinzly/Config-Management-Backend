@@ -125,28 +125,44 @@ public class ConfigurationService {
     }
 
     public List<Map<String, Object>> tenantEnvComparison(
-            List<Configuration> properties1,List<Configuration> properties2) {
+            List<Configuration> properties1, List<Configuration> properties2) {
 
+        // Convert properties1 to Map with null handling
         Map<String, String> tenant1Map = properties1.stream()
-                .collect(Collectors.toMap(Configuration::getPropertyKey, Configuration::getPropertyValue, (existingValue, newValue) -> existingValue));
+                .collect(Collectors.toMap(
+                        config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
+                        config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+
+        // Convert properties2 to Map with null handling
         Map<String, String> tenant2Map = properties2.stream()
-                .collect(Collectors.toMap(Configuration::getPropertyKey, Configuration::getPropertyValue, (existingValue, newValue) -> existingValue));
+                .collect(Collectors.toMap(
+                        config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
+                        config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+
+        // Combine all keys from both maps
         Set<String> allKeys = new HashSet<>();
         allKeys.addAll(tenant1Map.keySet());
         allKeys.addAll(tenant2Map.keySet());
+
+        // Prepare the result list
         List<Map<String, Object>> result = new ArrayList<>();
         for (String key : allKeys) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("propertyKey", key);
-            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, null));
-            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, null));
-            if (tenant1Map.get(key) != null && tenant2Map.get(key) != null &&
-                    tenant1Map.get(key).toString().equalsIgnoreCase(tenant2Map.get(key).toString())) {
+            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA")); // Replace null with "NA"
+            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA")); // Replace null with "NA"
+
+            // Compare values and mark as same or different
+            if (tenant1Map.getOrDefault(key, "NA").equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA"))) {
                 entry.put("isSame", true);
-            }
-            else{
+            } else {
                 entry.put("isSame", false);
             }
+
             result.add(entry);
         }
         return result;
@@ -336,6 +352,7 @@ public class ConfigurationService {
 
                 if (key1.contains(tenant1) && key2.contains(tenant2)) {
                     // Normalize keys by replacing tenant names
+                    System.out.println("contains   "+key1+key2);
                     String normalizedKey1 = key1.replace(tenant1, "{tenant}");
                     String normalizedKey2 = key2.replace(tenant2, "{tenant}");
 

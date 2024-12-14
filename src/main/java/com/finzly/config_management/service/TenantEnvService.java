@@ -71,7 +71,6 @@ public class TenantEnvService {
             // If the environment is 'PENDING', check if a record already exists for the same tenant
             if (tenantEnvDto.getEnvironment().equals("PENDING")) {
                 Optional<TenantEnv> existingPendingEnv = tenantEnvRepo.findByTenantAndEnvironment(tenantEnvDto.getTenant(), "PENDING");
-
                 // If the environment is PENDING and exists, throw an exception (do not allow duplicate tenant with 'PENDING')
                 if (existingPendingEnv.isPresent()) {
                     throw new TenantEnvCreationException("Tenant already Exists!");
