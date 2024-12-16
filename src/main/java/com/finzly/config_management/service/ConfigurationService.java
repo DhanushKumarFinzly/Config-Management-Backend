@@ -316,49 +316,50 @@ public class ConfigurationService {
 
 
 
-    public CompareDTO   tenantEnvKeyComparison(
-            String tenant1, String environment1, String tenant2, String environment2) {
+    public CompareDTO tenantEnvKeyComparison(
+            String tenant1, String environment1,
+            String tenant2, String environment2) {
 
-        String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1, environment1);
-        String uuid2 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant2, environment2);
-        UUID id1, id2;
-        String uuid=uuid2;
+        String uuid1 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant1.toLowerCase(), environment1.toLowerCase());
+        String uuid2 = tenantEnvRepo.findIdByTenantAndEnvironment(tenant2.toLowerCase(), environment2.toLowerCase());
+
         if (uuid1 == null) {
-            throw new IllegalArgumentException("No ID Found For this Tenant: " + tenant1 + " and Environment: " + environment1);
-        } else if (uuid2 == null) {
-            throw new IllegalArgumentException("No ID Found For this Tenant: " + tenant2 + " and Environment: " + environment2);
-        } else {
-            id1 = UUID.fromString(uuid1);
-            id2 = UUID.fromString(uuid2);
+            throw new IllegalArgumentException("No ID Found For Tenant: " + tenant1 + " and Environment: " + environment1);
         }
+        if (uuid2 == null) {
+            throw new IllegalArgumentException("No ID Found For Tenant: " + tenant2 + " and Environment: " + environment2);
+        }
+
+        UUID id1 = UUID.fromString(uuid1);
+        UUID id2 = UUID.fromString(uuid2);
 
         List<Configuration> properties1 = configurationRepo.findByTenantEnvId(id1);
         List<Configuration> properties2 = configurationRepo.findByTenantEnvId(id2);
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        // Iterate through properties1 using an iterator
+        // Iterate through properties1
         Iterator<Configuration> iterator1 = properties1.iterator();
-
         while (iterator1.hasNext()) {
             Configuration config1 = iterator1.next();
-            String key1 = config1.getPropertyKey();
+            String key1 = config1.getPropertyKey().toLowerCase();
 
             // Nested iteration for properties2
             Iterator<Configuration> iterator2 = properties2.iterator();
             while (iterator2.hasNext()) {
                 Configuration config2 = iterator2.next();
-                String key2 = config2.getPropertyKey();
+                String key2 = config2.getPropertyKey().toLowerCase();
 
-                if (key1.contains(tenant1) && key2.contains(tenant2)) {
+                if (key1.contains(tenant1.toLowerCase()) && key2.contains(tenant2.toLowerCase())) {
                     // Normalize keys by replacing tenant names
-                    System.out.println("contains   "+key1+key2);
-                    String normalizedKey1 = key1.replace(tenant1, "{tenant}");
-                    String normalizedKey2 = key2.replace(tenant2, "{tenant}");
+                    String normalizedKey1 = key1.replace(tenant1.toLowerCase(), "{tenant}");
+                    String normalizedKey2 = key2.replace(tenant2.toLowerCase(), "{tenant}");
 
-                    // Check if normalized keys are identical
-                    if (normalizedKey1.equals(normalizedKey2)) {
-                        // Create result entries
+                    // Check if normalized keys match but values differ
+                    if (normalizedKey1.equals(normalizedKey2) &&
+                            !config1.getPropertyValue().equals(config2.getPropertyValue())) {
+
+                        // Create entries for differing properties
                         Map<String, Object> list1Entry = new HashMap<>();
                         list1Entry.put("propertyKey", key1);
                         list1Entry.put("propertyValue", config1.getPropertyValue());
@@ -367,25 +368,27 @@ public class ConfigurationService {
                         list2Entry.put("propertyKey", key2);
                         list2Entry.put("propertyValue", config2.getPropertyValue());
 
-                        // Add to result
+                        // Add entries to result
                         result.add(list1Entry);
                         result.add(list2Entry);
 
                         // Remove matched entries from both lists
-                        iterator1.remove(); // Remove current entry from properties1
-                        iterator2.remove(); // Remove current entry from properties2
+                        iterator1.remove();
+                        iterator2.remove();
 
-                        // Break inner loop since key1 is already matched
+                        // Exit inner loop as key1 is matched
                         break;
                     }
                 }
             }
         }
-        List<Map<String, Object>> result1 =tenantEnvComparison(properties1,properties2);
 
+        // Compare remaining unmatched entries
+        List<Map<String, Object>> result1 = tenantEnvComparison(properties1, properties2);
 
-        return new CompareDTO(result,result1);
+        return new CompareDTO(result, result1);
     }
+
 
     public List<PropertyDTO> getPropertiesByIds(List<UUID> selectedIds) {
         List<Configuration> configurations = configurationRepo.findByIds(selectedIds);
