@@ -8,8 +8,12 @@ import com.finzly.config_management.Exception.ConfigurationSaveException;
 import com.finzly.config_management.Exception.DataNotFoundException;
 import com.finzly.config_management.Exception.UpdateFailedException;
 import com.finzly.config_management.Repository.ConfigurationRepo;
+import com.finzly.config_management.Repository.Dev2PropertiesRepo;
+import com.finzly.config_management.Repository.DevPropertiesRepo;
 import com.finzly.config_management.Repository.TenantEnvRepo;
 import com.finzly.config_management.model.Configuration;
+import com.finzly.config_management.model.Dev2Properties;
+import com.finzly.config_management.model.DevProperties;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,12 @@ public class ConfigurationService {
 
     @Autowired
     TenantEnvService tenantEnvService;
+
+    @Autowired
+    Dev2PropertiesRepo dev2PropertiesRepo;
+
+    @Autowired
+    DevPropertiesRepo devPropertiesRepo;
 
     public List<PropertyDTO> getProperty(String tenant, String environment) throws DataNotFoundException {
         String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(tenant, environment);
@@ -404,6 +414,42 @@ public class ConfigurationService {
                         config.getTarget()               // Target (String)
                 ))
                 .collect(Collectors.toList());
+    }
+
+
+    public List<Map<String, Object>> envComparison() {
+
+        List<DevProperties> properties1 = devPropertiesRepo.findAll();
+        List<Dev2Properties> properties2 = dev2PropertiesRepo.findAll();
+        Map<String, String> tenant1Map = properties1.stream()
+                .collect(Collectors.toMap(
+                        config -> config.getPropKey() != null ? config.getPropKey() : "NA",
+                        config -> config.getValue() != null ? config.getValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+        Map<String, String> tenant2Map = properties2.stream()
+                .collect(Collectors.toMap(
+                        config -> config.getPropKey() != null ? config.getPropKey() : "NA",
+                        config -> config.getValue() != null ? config.getValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+        Set<String> allKeys = new HashSet<>();
+        allKeys.addAll(tenant1Map.keySet());
+        allKeys.addAll(tenant2Map.keySet());
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String key : allKeys) {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("propertyKey", key);
+            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA")); // Replace null with "NA"
+            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA")); // Replace null with "NA"
+            if (tenant1Map.getOrDefault(key, "NA").equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA"))) {
+                entry.put("isSame", true);
+            } else {
+                entry.put("isSame", false);
+            }
+            result.add(entry);
+        }
+        return result;
     }
 
 }

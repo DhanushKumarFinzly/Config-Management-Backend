@@ -102,6 +102,21 @@ public class ConfigurationController {
         }
     }
 
+    @GetMapping("properties/compare-env")
+    public ResponseEntity<ApiResponse<List<Map<String,Object>>>> tenantEnvComparison(
+
+    )
+    {
+        try {
+            List<Map<String,Object>> result = configurationService.envComparison();
+            return ResponseEntity.ok(new ApiResponse<>("Properties Successfully Compared!",HttpStatus.OK.value(), result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+    }
+
+
+
 
     @PutMapping("properties/inter-change/{tenant}/{environment}/{propertyKey}/{newValue}")
     public ResponseEntity<ApiResponse<String>> changeProperty(
