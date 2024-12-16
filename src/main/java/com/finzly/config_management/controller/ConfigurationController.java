@@ -102,13 +102,10 @@ public class ConfigurationController {
         }
     }
 
-    @GetMapping("properties/compare-env")
-    public ResponseEntity<ApiResponse<List<Map<String,Object>>>> tenantEnvComparison(
-
-    )
-    {
+    @GetMapping("properties/compare-env/{env1}/{env2}")
+    public ResponseEntity<ApiResponse<List<Map<String,Object>>>> tenantEnvComparison(@PathVariable String env1,@PathVariable String env2) {
         try {
-            List<Map<String,Object>> result = configurationService.envComparison();
+            List<Map<String,Object>> result = configurationService.envComparison(env1,env2);
             return ResponseEntity.ok(new ApiResponse<>("Properties Successfully Compared!",HttpStatus.OK.value(), result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));

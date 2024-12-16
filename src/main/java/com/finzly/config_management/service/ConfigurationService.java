@@ -7,14 +7,11 @@ import com.finzly.config_management.DTO.TenantEnvPropertiesDTO;
 import com.finzly.config_management.Exception.ConfigurationSaveException;
 import com.finzly.config_management.Exception.DataNotFoundException;
 import com.finzly.config_management.Exception.UpdateFailedException;
-import com.finzly.config_management.Repository.ConfigurationRepo;
-import com.finzly.config_management.Repository.Dev2PropertiesRepo;
-import com.finzly.config_management.Repository.DevPropertiesRepo;
-import com.finzly.config_management.Repository.TenantEnvRepo;
-import com.finzly.config_management.model.Configuration;
-import com.finzly.config_management.model.Dev2Properties;
-import com.finzly.config_management.model.DevProperties;
+import com.finzly.config_management.Repository.*;
+import com.finzly.config_management.controller.BaseProperties;
+import com.finzly.config_management.model.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.aspectj.weaver.ast.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -37,6 +34,12 @@ public class ConfigurationService {
 
     @Autowired
     DevPropertiesRepo devPropertiesRepo;
+
+    @Autowired
+    TestPropertiesRepo testPropertiesRepo;
+
+    @Autowired
+    Test2PropertiesRepo test2PropertiesRepo;
 
     public List<PropertyDTO> getProperty(String tenant, String environment) throws DataNotFoundException {
         String tenantEnvId = tenantEnvRepo.findIdByTenantAndEnvironment(tenant, environment);
@@ -416,40 +419,62 @@ public class ConfigurationService {
                 .collect(Collectors.toList());
     }
 
+    public List<Map<String, Object>> envComparison(String env1, String env2) {
+        // Fetch properties for the given environments
+        List<? extends BaseProperties> properties1 = fetchPropertiesByEnv(env1);
+        List<? extends BaseProperties> properties2 = fetchPropertiesByEnv(env2);
 
-    public List<Map<String, Object>> envComparison() {
-
-        List<DevProperties> properties1 = devPropertiesRepo.findAll();
-        List<Dev2Properties> properties2 = dev2PropertiesRepo.findAll();
-        Map<String, String> tenant1Map = properties1.stream()
+        // Convert properties1 to Map
+        Map<String, String> env1Map = properties1.stream()
                 .collect(Collectors.toMap(
                         config -> config.getPropKey() != null ? config.getPropKey() : "NA",
                         config -> config.getValue() != null ? config.getValue() : "NA",
                         (existingValue, newValue) -> existingValue
                 ));
-        Map<String, String> tenant2Map = properties2.stream()
+
+        // Convert properties2 to Map
+        Map<String, String> env2Map = properties2.stream()
                 .collect(Collectors.toMap(
                         config -> config.getPropKey() != null ? config.getPropKey() : "NA",
                         config -> config.getValue() != null ? config.getValue() : "NA",
                         (existingValue, newValue) -> existingValue
                 ));
+
+        // Combine all keys from both maps
         Set<String> allKeys = new HashSet<>();
-        allKeys.addAll(tenant1Map.keySet());
-        allKeys.addAll(tenant2Map.keySet());
+        allKeys.addAll(env1Map.keySet());
+        allKeys.addAll(env2Map.keySet());
+
+        // Compare and prepare result
         List<Map<String, Object>> result = new ArrayList<>();
         for (String key : allKeys) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("propertyKey", key);
-            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA")); // Replace null with "NA"
-            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA")); // Replace null with "NA"
-            if (tenant1Map.getOrDefault(key, "NA").equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA"))) {
-                entry.put("isSame", true);
-            } else {
-                entry.put("isSame", false);
-            }
+            entry.put("PropertyValue1", env1Map.getOrDefault(key, "NA"));
+            entry.put("PropertyValue2", env2Map.getOrDefault(key, "NA"));
+            entry.put("isSame", env1Map.getOrDefault(key, "NA").equalsIgnoreCase(env2Map.getOrDefault(key, "NA")));
             result.add(entry);
         }
+
         return result;
     }
+
+    // Helper method to fetch properties based on environment
+    private List<? extends BaseProperties> fetchPropertiesByEnv(String env) {
+        switch (env) {
+            case "dev1":
+                return devPropertiesRepo.findAll();
+            case "dev2":
+                return dev2PropertiesRepo.findAll();
+            case "test1":
+                return testPropertiesRepo.findAll();
+            case "test2":
+                return test2PropertiesRepo.findAll();
+            default:
+                throw new IllegalArgumentException("Invalid environment: " + env);
+        }
+    }
+
+
 
 }

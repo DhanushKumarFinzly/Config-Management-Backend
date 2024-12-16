@@ -1,5 +1,6 @@
 package com.finzly.config_management.model;
 
+import com.finzly.config_management.controller.BaseProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "dev_properties")
-public class DevProperties {
+public class DevProperties implements BaseProperties {
 
     @Id
     @Column(name = "id", length = 50, nullable = false)

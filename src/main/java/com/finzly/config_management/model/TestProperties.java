@@ -10,8 +10,8 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "dev2_properties")
-public class Dev2Properties implements BaseProperties {
+@Table(name = "test_properties")
+public class TestProperties implements BaseProperties {
 
     @Id
     @Column(name = "id", length = 50, nullable = false)
@@ -135,10 +135,11 @@ public class Dev2Properties implements BaseProperties {
     public void setLastUpdatedDate(LocalDateTime lastUpdatedDate) {
         this.lastUpdatedDate = lastUpdatedDate;
     }
-    public Dev2Properties() {
+
+    public TestProperties() {
     }
 
-    public Dev2Properties(String id, String fieldGroup, String application, String profile, String label, String propKey, String value, String propertyType, Boolean secret, String lastUpdatedBy, LocalDateTime lastUpdatedDate) {
+    public TestProperties(String id, String fieldGroup, String application, String profile, String label, String propKey, String value, String propertyType, Boolean secret, String lastUpdatedBy, LocalDateTime lastUpdatedDate) {
         this.id = id;
         this.fieldGroup = fieldGroup;
         this.application = application;
