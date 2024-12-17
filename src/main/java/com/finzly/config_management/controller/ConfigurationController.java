@@ -95,7 +95,7 @@ public class ConfigurationController {
     )
     {
         try {
-            CompareDTO result = configurationService.tenantEnvKeyComparison(tenant1, environment1, tenant2, environment2);
+            CompareDTO result = configurationService.compareProperty(tenant1, environment1, tenant2, environment2);
             return ResponseEntity.ok(new ApiResponse<>("Property Fetched Successfully!",HttpStatus.OK.value(), result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
