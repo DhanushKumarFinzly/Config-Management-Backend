@@ -348,16 +348,21 @@ public class ConfigurationService {
 
     }
 
-    private PropertyComparisonDTO createPropertyComparisonDto(String masterKey,String propertyKey1,Configuration config1,String propertyKey2,Configuration config2)
-    {
+    private PropertyComparisonDTO createPropertyComparisonDto(String masterKey, String propertyKey1, Configuration config1, String propertyKey2, Configuration config2) {
         PropertyComparisonDTO comparisonDTO = new PropertyComparisonDTO();
         comparisonDTO.setMasterKey(masterKey);
         comparisonDTO.setPropertyKey1(propertyKey1);
-        comparisonDTO.setValue1(config1.getPropertyValue());
+        comparisonDTO.setValue1(config1 != null ? config1.getPropertyValue() : null);
         comparisonDTO.setPropertyKey2(propertyKey2);
-        comparisonDTO.setValue2(config2.getPropertyValue());
-        comparisonDTO.setIsSame(config1.getPropertyValue().equals(config2.getPropertyValue()));
+        comparisonDTO.setValue2(config2 != null ? config2.getPropertyValue() : null);
+
+        boolean isSame = config1 != null && config2 != null &&
+                config1.getPropertyValue() != null &&
+                config1.getPropertyValue().equals(config2.getPropertyValue());
+        comparisonDTO.setIsSame(isSame);
+
         return comparisonDTO;
     }
+
 
 }
