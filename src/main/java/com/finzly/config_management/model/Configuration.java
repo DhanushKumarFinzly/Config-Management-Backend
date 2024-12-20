@@ -1,6 +1,7 @@
 package com.finzly.config_management.model;
 
 
+import com.finzly.config_management.controller.BaseProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-public class Configuration {
+public class Configuration implements BaseProperties {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -186,5 +187,15 @@ public class Configuration {
 
     public void setTenantEnv(UUID tenantEnv) {
         this.tenantEnv = tenantEnv;
+    }
+
+    @Override
+    public String getPropKey() {
+        return "";
+    }
+
+    @Override
+    public String getValue() {
+        return "";
     }
 }

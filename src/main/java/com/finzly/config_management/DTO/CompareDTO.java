@@ -22,4 +22,9 @@ public class CompareDTO {
     public void setCommonProperties(List<Map<String, Object>> commonProperties) {
         this.commonProperties = commonProperties;
     }
+
+    public CompareDTO(List<PropertyComparisonDTO> tenantBasedProperties, List<Map<String, Object>> commonProperties) {
+        this.tenantBasedProperties = tenantBasedProperties;
+        this.commonProperties = commonProperties;
+    }
 }

@@ -1,6 +1,7 @@
 package com.finzly.config_management.controller;
 
 import com.finzly.config_management.DTO.CompareDTO;
+import com.finzly.config_management.DTO.InterChangeDTO;
 import com.finzly.config_management.DTO.PropertyDTO;
 import com.finzly.config_management.DTO.TenantEnvPropertiesDTO;
 import com.finzly.config_management.Exception.ConfigurationSaveException;
@@ -52,20 +53,14 @@ public class ConfigurationController {
     }
 
     @DeleteMapping("/properties/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteProperties(@PathVariable String id){
+    public ResponseEntity<ApiResponse<String>> deleteProperty(@PathVariable String id) {
         try {
             configurationService.deleteProperties(id);
-            return ResponseEntity.ok(new ApiResponse<>("Property Deleted SuccessFully...!", HttpStatus.OK.value()));
-        }
-        catch (Exception e) {
-            String message = e.getMessage();
-            HttpStatus status;
-            if (message.contains("Invalid UUID format")) {
-                status = HttpStatus.BAD_REQUEST;
-            } else{
-                status = HttpStatus.NOT_FOUND;
-            }
-            return ResponseEntity.status(status).body(new ApiResponse<>(message, status.value()));
+            return ResponseEntity.ok(new ApiResponse<>("Property deleted successfully!", HttpStatus.OK.value()));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
         }
     }
 
@@ -115,14 +110,10 @@ public class ConfigurationController {
 
 
 
-    @PutMapping("properties/inter-change/{tenant}/{environment}/{propertyKey}/{newValue}")
-    public ResponseEntity<ApiResponse<String>> changeProperty(
-            @PathVariable String tenant,
-            @PathVariable String environment,
-            @PathVariable String propertyKey,
-            @PathVariable String newValue) {
+    @PutMapping("properties/inter-change")
+    public ResponseEntity<ApiResponse<String>> changeProperty(@RequestBody InterChangeDTO interChangeDTO) {
         try {
-            configurationService.changeProperty(tenant, environment, propertyKey, newValue);
+            configurationService.changeProperty(interChangeDTO);
             return ResponseEntity.ok(
                     new ApiResponse<>("Property Updated Successfully!", HttpStatus.OK.value()));
         } catch (IllegalArgumentException e) {
@@ -131,20 +122,6 @@ public class ConfigurationController {
         }
     }
 
-    @PutMapping("properties/update/{tenant}/{environment}")
-    public ResponseEntity<ApiResponse<String>> updateTenantAndEnv(@PathVariable String tenant,@PathVariable String environment) throws DataNotFoundException {
-
-        try{
-            configurationService.updateTenantAndEnv(tenant,environment);
-            return ResponseEntity.ok(new ApiResponse<>("Tenant_Name_ID and ${env} Updated successfully for "+tenant+" And "+environment, HttpStatus.NOT_FOUND.value()));
-
-        }
-        catch (DataNotFoundException e) {
-            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.NOT_FOUND.value()));
-        } catch (Exception e) {
-            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        }
-    }
 
     @PutMapping("/clone/{tenant1}/{env1}/{tenant2}/{env2}")
     public ResponseEntity<ApiResponse<String>> clonePropertyForNewTenant(@PathVariable String tenant1,@PathVariable String env1,@PathVariable String tenant2,@PathVariable String env2){
