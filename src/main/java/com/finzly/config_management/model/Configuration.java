@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-public class Configuration implements BaseProperties {
+public class Configuration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -189,13 +189,4 @@ public class Configuration implements BaseProperties {
         this.tenantEnv = tenantEnv;
     }
 
-    @Override
-    public String getPropKey() {
-        return "";
-    }
-
-    @Override
-    public String getValue() {
-        return "";
-    }
 }

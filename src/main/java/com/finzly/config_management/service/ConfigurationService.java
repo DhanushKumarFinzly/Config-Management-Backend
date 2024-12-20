@@ -141,20 +141,40 @@ public class ConfigurationService {
 
     public List<Map<String, Object>> tenantEnvComparison(
             List<Configuration> properties1, List<Configuration> properties2) {
-        Map<String, String> tenant1Map =convertToMap(properties1);
-        Map<String, String> tenant2Map = convertToMap(properties2);
+
+        // Convert properties1 to a map
+        Map<String, String> tenant1Map =  properties1.stream()
+                .collect(Collectors.toMap(
+                        config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
+                        config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+
+        // Convert properties2 to a map
+        Map<String, String> tenant2Map = properties1.stream()
+                .collect(Collectors.toMap(
+                        config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
+                        config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
+                        (existingValue, newValue) -> existingValue
+                ));
+
+        // Combine keys from both maps
         Set<String> allKeys = new HashSet<>();
         allKeys.addAll(tenant1Map.keySet());
         allKeys.addAll(tenant2Map.keySet());
+
+        // Build the result list
         List<Map<String, Object>> result = new ArrayList<>();
         for (String key : allKeys) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("propertyKey", key);
-            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA")); // Replace null with "NA"
-            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA")); // Replace null with "NA"
-            entry.put("isSame", tenant1Map.getOrDefault(key, "NA").equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA")));
+            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA"));
+            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA"));
+            entry.put("isSame", tenant1Map.getOrDefault(key, "NA")
+                    .equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA")));
             result.add(entry);
         }
+
         return result;
     }
 
@@ -297,12 +317,14 @@ public class ConfigurationService {
         }
     }
 
-    private Map<String, String> convertToMap(List<? extends BaseProperties> properties){
+
+    private Map<String, String> convertToMap(List<? extends BaseProperties> properties) {
         return properties.stream()
+                .filter(config -> config.getPropKey() != null) // Exclude entries with null keys
                 .collect(Collectors.toMap(
-                        config -> config.getPropKey() != null ? config.getPropKey() : "NA",
+                        BaseProperties::getPropKey,
                         config -> config.getValue() != null ? config.getValue() : "NA",
-                        (existingValue, newValue) -> existingValue
+                        (existingValue, newValue) -> existingValue // Retain the first value for duplicate keys
                 ));
     }
 
