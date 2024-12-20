@@ -5,7 +5,14 @@ public class InterChangeDTO {
     private String tenant;
     private String environment;
     private String propertyKey;
-    private String newValue;
+    private String propertyValue;
+
+    public InterChangeDTO(String tenant, String environment, String propertyKey, String propertyValue) {
+        this.tenant = tenant;
+        this.environment = environment;
+        this.propertyKey = propertyKey;
+        this.propertyValue = propertyValue;
+    }
 
     public String getTenant() {
         return tenant;
@@ -31,18 +38,13 @@ public class InterChangeDTO {
         this.propertyKey = propertyKey;
     }
 
-    public String getNewValue() {
-        return newValue;
+    public String getPropertyValue() {
+        return propertyValue;
     }
 
-    public void setNewValue(String newValue) {
-        this.newValue = newValue;
-    }
 
-    public InterChangeDTO(String tenant, String environment, String propertyKey, String newValue) {
-        this.tenant = tenant;
-        this.environment = environment;
-        this.propertyKey = propertyKey;
-        this.newValue = newValue;
+
+    public void setPropertyValue(String propertyValue) {
+        this.propertyValue = propertyValue;
     }
 }

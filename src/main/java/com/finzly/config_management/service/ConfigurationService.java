@@ -183,12 +183,13 @@ public class ConfigurationService {
         List<Configuration> configurations = configurationRepo.findByTenantEnvId(tenantEnvId);
         for (Configuration config : configurations) {
             if (config.getPropertyKey().equals(interChangeDTO.getPropertyKey())){
-                config.setPropertyValue(interChangeDTO.getNewValue());
+                System.out.println("Before Get New Value");
+                config.setPropertyValue(interChangeDTO.getPropertyValue());
                 configurationRepo.save(config);
                 return;
             }
         }
-       addNewConfiguration(interChangeDTO.getTenant(), interChangeDTO.getEnvironment(), interChangeDTO.getPropertyKey(), interChangeDTO.getNewValue(), tenantEnvId);
+       addNewConfiguration(interChangeDTO.getTenant(), interChangeDTO.getEnvironment(), interChangeDTO.getPropertyKey(), interChangeDTO.getPropertyValue(), tenantEnvId);
     }
 
     private void addNewConfiguration(String tenant, String environment, String propertyKey, String newValue, UUID tenantEnvId) {
