@@ -142,42 +142,36 @@ public class ConfigurationService {
     public List<Map<String, Object>> tenantEnvComparison(
             List<Configuration> properties1, List<Configuration> properties2) {
 
-        // Convert properties1 to a map
-        Map<String, String> tenant1Map =  properties1.stream()
+        Map<String, String> tenant1Map = properties1.stream()
                 .collect(Collectors.toMap(
                         config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
                         config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
                         (existingValue, newValue) -> existingValue
                 ));
-
-        // Convert properties2 to a map
-        Map<String, String> tenant2Map = properties1.stream()
+        Map<String, String> tenant2Map = properties2.stream()
                 .collect(Collectors.toMap(
                         config -> config.getPropertyKey() != null ? config.getPropertyKey() : "NA",
                         config -> config.getPropertyValue() != null ? config.getPropertyValue() : "NA",
                         (existingValue, newValue) -> existingValue
                 ));
-
-        // Combine keys from both maps
         Set<String> allKeys = new HashSet<>();
         allKeys.addAll(tenant1Map.keySet());
         allKeys.addAll(tenant2Map.keySet());
-
-        // Build the result list
         List<Map<String, Object>> result = new ArrayList<>();
         for (String key : allKeys) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("propertyKey", key);
-            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA"));
-            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA"));
-            entry.put("isSame", tenant1Map.getOrDefault(key, "NA")
-                    .equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA")));
+            entry.put("PropertyValue1", tenant1Map.getOrDefault(key, "NA")); // Replace null with "NA"
+            entry.put("PropertyValue2", tenant2Map.getOrDefault(key, "NA")); // Replace null with "NA"
+            if (tenant1Map.getOrDefault(key, "NA").equalsIgnoreCase(tenant2Map.getOrDefault(key, "NA"))) {
+                entry.put("isSame", true);
+            } else {
+                entry.put("isSame", false);
+            }
             result.add(entry);
         }
-
         return result;
     }
-
 
 
     public void changeProperty(InterChangeDTO interChangeDTO) {
