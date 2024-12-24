@@ -10,6 +10,7 @@ public class PropertyDTO {
     private String fieldGroup;
     private String type;
     private String target;
+    
 
     public PropertyDTO(UUID id, String propertyKey, String propertyValue, String application, String fieldGroup, String type, String target) {
         this.id = id;
@@ -76,6 +77,8 @@ public class PropertyDTO {
     public void setTarget(String target) {
         this.target = target;
     }
+
+
 
 
 }
