@@ -230,7 +230,7 @@ public class ConfigurationService {
                 Configuration newConfiguration = new Configuration(updatedPropertyKey, config.getFieldGroup(),
                         config.getApplication(), updatedPropertyValue, config.getTarget(), config.getType(),
                         LocalDateTime.now(), LocalDateTime.now(), config.getStatus(), config.getProduct(),
-                        config.getAppId(), config.getIsSecureString(), tenantEnvId1
+                        config.getAppId(), config.getIsSecureString(), tenantEnvId1, config.getRelease()
                 );
                 newConfigurations.add(newConfiguration);
             }

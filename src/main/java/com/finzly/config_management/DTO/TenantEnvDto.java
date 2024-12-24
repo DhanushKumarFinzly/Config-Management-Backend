@@ -5,6 +5,7 @@ public class TenantEnvDto {
     private String tenant;
     private String tenantName;
     private String environment;
+    private String release;
 
 
     public String getTenant() {
@@ -34,11 +35,19 @@ public class TenantEnvDto {
     public TenantEnvDto() {
     }
 
-    public TenantEnvDto(String tenant, String tenantName, String environment) {
+    public String getRelease() {
+        return release;
+    }
+
+    public void setRelease(String release) {
+        this.release = release;
+    }
+
+    public TenantEnvDto(String tenant, String tenantName, String environment,String release) {
         this.tenant = tenant;
         this.tenantName = tenantName;
         this.environment = environment;
-
+        this.release=release;
     }
 
 }

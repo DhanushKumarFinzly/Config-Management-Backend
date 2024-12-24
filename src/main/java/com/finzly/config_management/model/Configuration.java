@@ -53,6 +53,9 @@ public class Configuration {
     @Column(name = "is_secure_string")
     private int isSecureString;
 
+    @Column(name = "release_version")
+    private String release;
+
     @Column(name = "tenant_env_id")
     @JdbcTypeCode(java.sql.Types.VARCHAR)
     private UUID tenantEnv;
@@ -61,7 +64,7 @@ public class Configuration {
     public Configuration() {
     }
 
-    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdAt, LocalDateTime updatedAt, String status, String product, String appId, int isSecureString, UUID tenantEnv) {
+    public Configuration(String propertyKey, String fieldGroup, String application, String propertyValue, String target, String type, LocalDateTime createdAt, LocalDateTime updatedAt, String status, String product, String appId, int isSecureString, UUID tenantEnv,String release) {
         this.propertyKey = propertyKey;
         this.fieldGroup = fieldGroup;
         this.application = application;
@@ -75,6 +78,7 @@ public class Configuration {
         this.appId = appId;
         this.isSecureString = isSecureString;
         this.tenantEnv = tenantEnv;
+        this.release=release;
     }
 
     public UUID getId() {
@@ -189,4 +193,15 @@ public class Configuration {
         this.tenantEnv = tenantEnv;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getRelease() {
+        return release;
+    }
+
+    public void setRelease(String release) {
+        this.release = release;
+    }
 }

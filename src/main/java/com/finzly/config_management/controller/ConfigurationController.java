@@ -108,8 +108,6 @@ public class ConfigurationController {
     }
 
 
-
-
     @PutMapping("properties/inter-change")
     public ResponseEntity<ApiResponse<String>> changeProperty(@RequestBody InterChangeDTO interChangeDTO) {
         try {

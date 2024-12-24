@@ -88,6 +88,7 @@ public class TenantEnvService {
                     tenantEnv = existingPendingEnv.get();
                     tenantEnv.setEnvironment(tenantEnvDto.getEnvironment());
                     tenantEnv.setUpdatedAt(LocalDateTime.now());
+
                     tenantEnvRepo.save(tenantEnv);
                     return;
                 }
@@ -155,7 +156,9 @@ public class TenantEnvService {
                         masterConfig.getProduct(),
                         masterConfig.getAppId(),
                         masterConfig.getIsSecureString(),
-                        UUID.fromString(tenantEnvId)
+                        UUID.fromString(tenantEnvId),
+                        tenantEnvDto.getRelease()
+
                 );
                 configurations.add(configuration);
             }
