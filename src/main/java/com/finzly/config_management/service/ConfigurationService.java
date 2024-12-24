@@ -53,7 +53,7 @@ public class ConfigurationService {
             }
             return properties.stream()
                     .map(property -> new PropertyDTO(property.getId(), property.getPropertyKey(), property.getPropertyValue(),
-                            property.getApplication(), property.getFieldGroup(), property.getType(), property.getTarget()))
+                            property.getApplication(), property.getFieldGroup(), property.getType(), property.getTarget(), property.getRelease()))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new DataNotFoundException("Invalid tenant or environment provided: " + e.getMessage());
@@ -268,7 +268,8 @@ public class ConfigurationService {
                         config.getApplication(),         // Application (String)
                         config.getFieldGroup(),          // Field Group (String)
                         config.getType(),                // Type (String)
-                        config.getTarget()               // Target (String)
+                        config.getTarget()  ,
+                        config.getRelease()// Target (String)
                 ))
                 .collect(Collectors.toList());
     }

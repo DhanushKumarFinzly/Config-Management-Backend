@@ -10,9 +10,9 @@ public class PropertyDTO {
     private String fieldGroup;
     private String type;
     private String target;
-    
+    private String release;
 
-    public PropertyDTO(UUID id, String propertyKey, String propertyValue, String application, String fieldGroup, String type, String target) {
+    public PropertyDTO(UUID id, String propertyKey, String propertyValue, String application, String fieldGroup, String type, String target,String release) {
         this.id = id;
         this.propertyKey = propertyKey;
         this.propertyValue = propertyValue;
@@ -20,6 +20,7 @@ public class PropertyDTO {
         this.fieldGroup = fieldGroup;
         this.type = type;
         this.target = target;
+        this.release=release;
     }
 
     public UUID getId() {
@@ -78,7 +79,11 @@ public class PropertyDTO {
         this.target = target;
     }
 
+    public String getRelease() {
+        return release;
+    }
 
-
-
+    public void setRelease(String release) {
+        this.release = release;
+    }
 }
