@@ -94,6 +94,7 @@ public class ConfigurationService {
             configuration.setPropertyKey(tenantEnvPropertiesDTO.getPropertyKey());
             configuration.setPropertyValue(tenantEnvPropertiesDTO.getPropertyValue());
             configuration.setTenantEnv(tenantEnvId);
+            configuration.setRelease(tenantEnvPropertiesDTO.getRelease());
             configurationRepo.save(configuration);
         } catch (Exception e) {
             throw new ConfigurationSaveException("Failed to save configuration: " + e.getMessage());
@@ -274,24 +275,19 @@ public class ConfigurationService {
                 .collect(Collectors.toList());
     }
 
-    public List<Map<String, Object>> envComparison(String env1, String env2) {
-        // Fetch properties for the given environments
-        List<? extends BaseProperties> properties1 = fetchPropertiesByEnv(env1);
-        List<? extends BaseProperties> properties2 = fetchPropertiesByEnv(env2);
-        // Convert properties1 to Map
-        Map<String, String> env1Map = convertToMap(properties1);
-        Map<String, String> env2Map = convertToMap(properties2);
+    public List<Map<String, Object>> envComparison(Map<String, Object> properties1, Map<String, Object> properties2) {
         Set<String> allKeys = new HashSet<>();
-        allKeys.addAll(env1Map.keySet());
-        allKeys.addAll(env2Map.keySet());
-        // Compare and prepare result
+        allKeys.addAll(properties1.keySet());
+        allKeys.addAll(properties2.keySet());
+
+        // Compare and prepare the result
         List<Map<String, Object>> result = new ArrayList<>();
         for (String key : allKeys) {
             Map<String, Object> entry = new HashMap<>();
             entry.put("propertyKey", key);
-            entry.put("propertyValue1", env1Map.getOrDefault(key, "NA"));
-            entry.put("propertyValue2", env2Map.getOrDefault(key, "NA"));
-            entry.put("isSame", env1Map.getOrDefault(key, "NA").equalsIgnoreCase(env2Map.getOrDefault(key, "NA")));
+            entry.put("propertyValue1", properties1.getOrDefault(key, "NA"));
+            entry.put("propertyValue2", properties2.getOrDefault(key, "NA"));
+            entry.put("isSame", properties1.getOrDefault(key, "NA").equals(properties2.getOrDefault(key, "NA")));
             result.add(entry);
         }
         return result;
@@ -341,8 +337,8 @@ public class ConfigurationService {
                 Configuration config2 = getMatchingKey(properties2,propertyKey2);
                 PropertyComparisonDTO comparisonDTO = createPropertyComparisonDto(masterKey,propertyKey1,config1,propertyKey2,config2);
                 comparisonResults.add(comparisonDTO);
-                properties1.removeIf(p -> p.getPropertyKey().equals(propertyKey1));
-                properties2.removeIf(p -> p.getPropertyKey().equals(propertyKey2));
+                properties1.removeIf(p -> propertyKey1.equals(p.getPropertyKey()));
+                properties2.removeIf(p -> propertyKey2.equals(p.getPropertyKey()));
             }
         }
         List<Map<String,Object>> commonProperties=tenantEnvComparison(properties1,properties2);

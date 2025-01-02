@@ -9,8 +9,9 @@ public class TenantEnvPropertiesDTO {
     private String field_group;
     private String target;
     private String type;
+    private String release;
 
-    public TenantEnvPropertiesDTO(String tenant, String environment, String propertyKey, String propertyValue, String application, String field_group, String target, String type) {
+    public TenantEnvPropertiesDTO(String tenant, String environment, String propertyKey, String propertyValue, String application, String field_group, String target, String type,String release) {
         this.tenant = tenant;
         this.environment = environment;
         this.propertyKey = propertyKey;
@@ -19,6 +20,7 @@ public class TenantEnvPropertiesDTO {
         this.field_group = field_group;
         this.target = target;
         this.type = type;
+        this.release=release;
     }
 
     public String getTenant() {
@@ -83,5 +85,13 @@ public class TenantEnvPropertiesDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getRelease() {
+        return release;
+    }
+
+    public void setRelease(String release) {
+        this.release = release;
     }
 }

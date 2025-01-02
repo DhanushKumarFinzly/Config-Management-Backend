@@ -1,5 +1,6 @@
 package com.finzly.config_management.controller;
 
+
 import com.finzly.config_management.DTO.CompareDTO;
 import com.finzly.config_management.DTO.InterChangeDTO;
 import com.finzly.config_management.DTO.PropertyDTO;
@@ -8,15 +9,22 @@ import com.finzly.config_management.Exception.ConfigurationSaveException;
 import com.finzly.config_management.Exception.UpdateFailedException;
 import com.finzly.config_management.service.ConfigurationService;
 import com.finzly.config_management.Exception.DataNotFoundException;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 
 @CrossOrigin
 @RestController
@@ -97,15 +105,15 @@ public class ConfigurationController {
         }
     }
 
-    @GetMapping("properties/compare-env/{env1}/{env2}")
-    public ResponseEntity<ApiResponse<List<Map<String,Object>>>> tenantEnvComparison(@PathVariable String env1,@PathVariable String env2) {
-        try {
-            List<Map<String,Object>> result = configurationService.envComparison(env1,env2);
-            return ResponseEntity.ok(new ApiResponse<>("Properties Successfully Compared!",HttpStatus.OK.value(), result));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
-        }
-    }
+//    @GetMapping("properties/compare-env/{env1}/{env2}")
+//    public ResponseEntity<ApiResponse<List<Map<String,Object>>>> tenantEnvComparison(@PathVariable String env1,@PathVariable String env2) {
+//        try {
+//            List<Map<String,Object>> result = configurationService.envComparison(env1,env2);
+//            return ResponseEntity.ok(new ApiResponse<>("Properties Successfully Compared!",HttpStatus.OK.value(), result));
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+//        }
+//    }
 
 
     @PutMapping("properties/inter-change")
@@ -130,8 +138,6 @@ public class ConfigurationController {
             return ResponseEntity.ok(new ApiResponse<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
-
-
 
 
 }
