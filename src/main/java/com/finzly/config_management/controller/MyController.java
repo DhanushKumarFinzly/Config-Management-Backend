@@ -67,6 +67,12 @@ public class MyController {
     public ResponseEntity<List<Map<String, Object>>> compareEnvironments(@PathVariable String env1,@PathVariable String env2) throws NoSuchAlgorithmException, KeyManagementException, IOException {
         disableSslVerification();
 
+        Map<String, String> envToApiUrl = Map.of(
+                "dev", "https://finzly-eks-bankos-dev-lb-1562127541.us-east-2.elb.amazonaws.com/config/",
+                "dev2", "https://finzly-eks-bankos-dev2-lb-396975821.us-east-2.elb.amazonaws.com/config/",
+                "test", "https://finzly-eks-bankos-test-lb-1777220069.us-east-2.elb.amazonaws.com/config/",
+                "test2", "https://finzly-eks-bankos-test2-lb-163032387.us-east-2.elb.amazonaws.com/config/"
+        );
         // Fetch all applications from the repository
         List<Application> applications = applicationRepo.findAll();
         List<Map<String, Object>> allComparisonResults = new ArrayList<>();
@@ -77,19 +83,22 @@ public class MyController {
         for (Application app : applications) {
             String appName = app.getAppName();
             // Construct API URLs
-            String api1Url = "https://finzly-eks-bankos-dev2-lb-396975821.us-east-2.elb.amazonaws.com/config/" + appName + "/" + env1 + "/master";
-                Map<String, Object> api1CombinedSource = fetchAndCombineSources(api1Url,isFirstCall, appName, env1);
+
+            String api1Url = envToApiUrl.get(env1)+ appName + "/" + env1 + "/master";
+                Map<String, Object> api1CombinedSource = fetchAndCombineSources(api1Url, appName, env1);
                  combinedSource1.putAll(api1CombinedSource);
         }
         isFirstCall=true;
+        System.out.println("propertie1"+combinedSource1.size());
         for (Application app : applications) {
             String appName = app.getAppName();
-            String api2Url = "https://finzly-eks-bankos-dev-lb-1562127541.us-east-2.elb.amazonaws.com/config/" + appName + "/" + env2;
-            Map<String, Object> api2CombinedSource = fetchAndCombineSources(api2Url,isFirstCall, appName, env2);
+            String api2Url = envToApiUrl.get(env2)+ appName + "/" + env2;
+            Map<String, Object> api2CombinedSource = fetchAndCombineSources(api2Url, appName, env2);
             combinedSource2.putAll(api2CombinedSource);
 
 
         }
+        System.out.println("propertie2"+combinedSource2.size());
              try {   // Compare environments
                  List<Map<String, Object>> comparisonResult = configurationService.envComparison(combinedSource1, combinedSource2);
 
@@ -107,7 +116,7 @@ public class MyController {
         return ResponseEntity.ok(allComparisonResults);
     }
 
-    private Map<String, Object> fetchAndCombineSources(String apiUrl,boolean isFirstCall,String application,String env) throws IOException {
+    private Map<String, Object> fetchAndCombineSources(String apiUrl,String application,String env) throws IOException {
         String username = "config"; // Replace with your username
         String password = "swaps123"; // Replace with your password
         Map<String, Object> combinedSource = new HashMap<>();
@@ -142,15 +151,18 @@ public class MyController {
 
             if ((application+"-default").equals(sourceName)) {
                 combinedSource.putAll(sourceMap);
-            }
 
-            // Add source3 only when name == "{application_name}-{envName}"
-            if (isFirstCall && sourceName.equals("application"+env)) {
+
+            }
+            if (isFirstCall && sourceName.equals("application-"+env)) {
                 combinedSource.putAll(sourceMap);
                 isFirstCall=false;
             }
-        }
 
+            // Add source3 only when name == "{application_name}-{envName}"
+
+        }
+        System.out.println(combinedSource.size());
         return combinedSource;
     }
 
