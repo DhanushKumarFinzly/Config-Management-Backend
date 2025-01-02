@@ -84,22 +84,23 @@ public class MyController {
             String appName = app.getAppName();
             // Construct API URLs
 
-            String api1Url = envToApiUrl.get(env1)+ appName + "/" + env1 + "/master";
+            String api1Url = envToApiUrl.get(env1)+appName + "/" + env1 + "/master";
                 Map<String, Object> api1CombinedSource = fetchAndCombineSources(api1Url, appName, env1);
                  combinedSource1.putAll(api1CombinedSource);
         }
         isFirstCall=true;
-        System.out.println("propertie1"+combinedSource1.size());
+        System.out.println("propertie1 "+combinedSource1.size());
         for (Application app : applications) {
             String appName = app.getAppName();
-            String api2Url = envToApiUrl.get(env2)+ appName + "/" + env2;
+            String api2Url = envToApiUrl.get(env2)+ appName + "/" + env2+"/master";
             Map<String, Object> api2CombinedSource = fetchAndCombineSources(api2Url, appName, env2);
             combinedSource2.putAll(api2CombinedSource);
 
 
         }
-        System.out.println("propertie2"+combinedSource2.size());
+        System.out.println("propertie2 "+combinedSource2.size());
              try {   // Compare environments
+
                  List<Map<String, Object>> comparisonResult = configurationService.envComparison(combinedSource1, combinedSource2);
 
                  // Collect results
